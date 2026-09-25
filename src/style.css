@@ -10,7 +10,8 @@
   --red: #c8102e;
   --child-w: 170px;
   --creature-w: 210px;
-  --board: min(calc(100dvh - 48px), calc(100vw - var(--child-w) - var(--creature-w) - 72px));
+  --vh: 100vh;
+  --board: min(calc(var(--vh) - 48px), calc(100vw - var(--child-w) - var(--creature-w) - 72px));
   --sq: calc((var(--board) - 24px) / 8);
   --px: 4px;
 }
@@ -307,7 +308,7 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .lessons {
   display: grid;
   grid-template-columns: 210px var(--lesson-board) 330px;
-  --lesson-board: min(calc(100dvh - 48px), calc(100vw - 210px - 330px - 72px));
+  --lesson-board: min(calc(var(--vh) - 48px), calc(100vw - 210px - 330px - 72px));
   justify-content: center; align-items: center; gap: 24px; padding: 24px;
   background: linear-gradient(var(--sky), #a9dcf5 80%);
 }
@@ -336,3 +337,9 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .sq.hl-good::before { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(46, 158, 68, 0.45); }
 .sq.hl-bad::before { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(200, 16, 46, 0.4); }
 .sq.hl-gold::before { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(245, 200, 76, 0.55); }
+
+/* Older iPads without dvh use vh (review fix). */
+@supports (height: 100dvh) { :root { --vh: 100dvh; } }
+
+.promo-back { width: 96px; height: 120px; align-self: center; }
+.overlay.waking .btn { pointer-events: none; }

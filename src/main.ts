@@ -11,8 +11,21 @@ installTextures();
 const app = document.getElementById('app')!;
 let game: GameView | null = null;
 
+let blockTapsUntil = 0;
+
 function show(el: HTMLElement) {
   app.replaceChildren(el);
+  // The second tap of a double tap must not land on the new screen.
+  blockTapsUntil = performance.now() + 400;
+}
+
+for (const type of ['click', 'pointerdown']) {
+  document.addEventListener(type, (e) => {
+    if (performance.now() < blockTapsUntil) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
 }
 
 function home() {

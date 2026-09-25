@@ -87,12 +87,13 @@ export class GameView {
     ));
     this.setEmotion('idle', { bubble: false });
     this.render();
-    this.startChildTurn();
+    if (this.match.game.turn === 'b') void this.creatureTurn();
+    else this.startChildTurn();
   }
 
   destroy(): void {
     this.token++;
-    this.ai.cancel();
+    this.ai.dispose();
     clearTimeout(this.emotionTimer);
     clearTimeout(this.idleTimer);
     clearTimeout(this.hopTimer);
@@ -122,7 +123,9 @@ export class GameView {
     board.addEventListener('pointerdown', (e) => this.onPointerDown(e));
     board.addEventListener('pointermove', (e) => this.onPointerMove(e));
     board.addEventListener('pointerup', (e) => this.onPointerUp(e));
-    board.addEventListener('pointercancel', () => this.endDrag());
+    board.addEventListener('pointercancel', (e) => {
+      if (this.drag?.id === e.pointerId) this.endDrag();
+    });
   }
 
   private squareAt(x: number, y: number): Square | null {
@@ -199,6 +202,8 @@ export class GameView {
 
   private onPointerDown(e: PointerEvent) {
     e.preventDefault();
+    // Ignore a second finger while one piece is being dragged.
+    if (this.drag && e.pointerId !== this.drag.id) return;
     if (this.ended || this.animating || this.match.held) return;
     this.resetIdleTimers();
     const sq = this.squareAt(e.clientX, e.clientY);
@@ -234,7 +239,9 @@ export class GameView {
   private onPointerMove(e: PointerEvent) {
     const d = this.drag;
     if (!d || d.id !== e.pointerId) return;
-    if (!d.active && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) {
+    // A drag only starts after a clear movement (40 percent of a square), so a finger wobble never moves a piece.
+    const threshold = this.squares[d.from].getBoundingClientRect().width * 0.4;
+    if (!d.active && Math.hypot(e.clientX - d.x, e.clientY - d.y) > threshold) {
       d.active = true;
       const size = this.squares[d.from].getBoundingClientRect().width;
       const ghost = document.createElement('div');
@@ -260,7 +267,7 @@ export class GameView {
     this.endDrag();
     if (!wasActive) return;
     const to = this.squareAt(e.clientX, e.clientY - 40);
-    if (to !== null && this.targetsFrom(d.from).some((m) => m.to === to)) void this.childMove(d.from, to);
+    if (to !== null && to !== d.from && this.targetsFrom(d.from).some((m) => m.to === to)) void this.childMove(d.from, to);
     else this.render();
   }
 
@@ -275,6 +282,11 @@ export class GameView {
     let move = options[0];
     if (options.length > 1) {
       const choice = await this.askPromotion();
+      if (!choice) {
+        this.selected = null;
+        this.render();
+        return;
+      }
       move = options.find((m) => m.promotion === choice)!;
     }
     this.selected = null;
@@ -287,18 +299,25 @@ export class GameView {
     void this.creatureTurn();
   }
 
-  private askPromotion(): Promise<'q' | 'r' | 'b' | 'n'> {
+  /** Resolves with the chosen piece, or null when the child taps back (AC-38). */
+  private askPromotion(): Promise<'q' | 'r' | 'b' | 'n' | null> {
     const box = this.$('.promo');
     box.innerHTML = `<div class="promo-row">${(['q', 'r', 'b', 'n'] as const)
-      .map((t) => `<button class="btn promo-btn" data-t="${t}">${pieceSvg(t, 'w')}</button>`).join('')}</div>`;
+      .map((t) => `<button class="btn promo-btn" data-t="${t}">${pieceSvg(t, 'w')}</button>`).join('')}
+      <button class="btn promo-back" aria-label="Terug">${icon('back')}</button></div>`;
     box.classList.remove('hidden');
+    // The tap that opened the picker must not also choose or cancel.
+    box.classList.add('waking');
+    setTimeout(() => box.classList.remove('waking'), 400);
     return new Promise((resolve) => {
+      const done = (v: 'q' | 'r' | 'b' | 'n' | null) => {
+        box.classList.add('hidden');
+        resolve(v);
+      };
       box.querySelectorAll<HTMLElement>('.promo-btn').forEach((b) =>
-        b.addEventListener('click', () => {
-          box.classList.add('hidden');
-          resolve(b.dataset.t as 'q' | 'r' | 'b' | 'n');
-        }),
+        b.addEventListener('click', () => done(b.dataset.t as 'q' | 'r' | 'b' | 'n')),
       );
+      box.querySelector('.promo-back')!.addEventListener('click', () => done(null));
     });
   }
 
@@ -418,7 +437,11 @@ export class GameView {
     }, IDLE_BUBBLE_MS);
   }
 
+  private oopsLockedUntil = 0;
+
   private onOops() {
+    // One double tap must not spend both credits.
+    if (performance.now() < this.oopsLockedUntil) return;
     const oops = this.$('.oops');
     if (oops.classList.contains('disabled')) {
       this.$('.tokens').animate(
@@ -427,6 +450,7 @@ export class GameView {
       );
       return;
     }
+    this.oopsLockedUntil = performance.now() + 600;
     this.token++;
     this.thinking = false;
     this.ai.cancel();
@@ -486,6 +510,9 @@ export class GameView {
         </div>
       </div>`;
     box.classList.remove('hidden');
+    // Taps that were meant for the board must not hit the buttons that just appeared.
+    box.classList.add('waking');
+    setTimeout(() => box.classList.remove('waking'), 700);
     if (result.kind === 'win') this.confetti();
     box.querySelector('.rematch')!.addEventListener('click', () => this.leave(() => this.cb.play(this.creature)));
     box.querySelector('.next')?.addEventListener('click', () => this.leave(() => this.cb.play(next!.id)));

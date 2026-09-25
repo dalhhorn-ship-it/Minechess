@@ -93,7 +93,8 @@ export class Match {
 
   canOops(): boolean {
     if (this.credits <= 0 || this.result) return false;
-    return this.game.moves.length > 0;
+    // On the child's turn a full move pair must exist to take back.
+    return this.game.turn === 'w' ? this.game.moves.length >= 2 : this.game.moves.length >= 1;
   }
 
   /**
