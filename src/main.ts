@@ -2,6 +2,7 @@ import './style.css';
 import type { CreatureId } from './ai/creatures';
 import { GameView } from './ui/gameView';
 import { homeScreen } from './ui/home';
+import { LessonView } from './ui/lessonView';
 import { icon } from './ui/icons';
 import { installTextures } from './ui/pixel';
 
@@ -17,7 +18,13 @@ function show(el: HTMLElement) {
 function home() {
   game?.destroy();
   game = null;
-  show(homeScreen(play));
+  show(homeScreen(play, learn));
+}
+
+function learn() {
+  game?.destroy();
+  game = null;
+  show(new LessonView(home).el);
 }
 
 function play(id: CreatureId) {

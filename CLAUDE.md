@@ -2,7 +2,7 @@
 
 An iPad chess game for kids aged 5 to 12, built first for the owner's two kids, aged 5 and 9. The child picks an opponent from a cast of original, blocky, Minecraft inspired creatures. Each creature has a play style (for example smart, not smart, aggressive, defensive) and shows emotions on screen that react to the game, including winning and losing.
 
-Status: product definition (PRD Draft v0.3). Runs in the iPad browser (Safari), launched from its home screen icon (Safari deletes storage of sites unused for 7 days unless installed), private family use, free, Dutch and English (v0.1 is Dutch only). Plain chess first; mine chess is a planned v2.0 variant, so the rules engine must support variants. The PRD lives in `01-product/`.
+Status: v0.1 built and live on Cloudflare (PRD Draft v0.4); next is the owner's iPad check and kid playtest (`docs/test/playtest-v0.1.md`). Backlog: `01-product/backlog.md`. Tech debt: `docs/tech-debt.md`. Runs in the iPad browser (Safari), launched from its home screen icon (Safari deletes storage of sites unused for 7 days unless installed), private family use, free, Dutch and English (v0.1 is Dutch only). Plain chess first; mine chess is a planned v2.0 variant, so the rules engine must support variants. The PRD lives in `01-product/`.
 
 ## Project context every agent must respect
 

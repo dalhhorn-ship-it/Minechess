@@ -108,6 +108,13 @@ const ICONS: Record<string, { rows: string[]; pal: Record<string, string> }> = {
     ],
     pal: { o: INK, '3': INK },
   },
+  book: {
+    rows: [
+      '..........', 'ooooo.oooo', 'orrrrorrro', 'orwwrorwwo', 'orrrrorrro',
+      'orwwrorwwo', 'orrrrorrro', 'orrrrorrro', 'ooooooooo.', '..........',
+    ],
+    pal: { o: INK, r: '#c8553d', w: '#fffbf2' },
+  },
   lock: {
     rows: [
       '...oooo...', '..o....o..', '..o....o..', '.oooooooo.', '.oyyyyyyo.',

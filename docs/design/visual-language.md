@@ -8,7 +8,9 @@ Related: [screens.md](screens.md), [creatures.md](creatures.md), [open-questions
 
 Minechess has no sound and one of its two players cannot read. So the screen must speak with only three tools: **shape, colour and motion**. Every meaning in the game uses at least two of the three, and never colour alone.
 
-Style in one line: **soft blocky world**. Flat colour blocks with rounded corners, one light top face and one darker side face, thick friendly navy outlines, calm backgrounds, bright interactive things. Blocky enough to feel like the world the kids love, soft enough to be clearly its own thing (see the originality rule in creatures.md).
+**Update after the first build (owner decision):** the built game uses a 3D block world look instead of flat vector: extruded block pieces and icons, creatures made of 3D boxes, inventory style grey panels with dark item slots, stone buttons, bevelled block squares and a board on a grass block. Colours, highlight shapes, touch sizes and motion rules below still apply.
+
+Original style in one line: **soft blocky world**. Flat colour blocks with rounded corners, one light top face and one darker side face, thick friendly navy outlines, calm backgrounds, bright interactive things. Blocky enough to feel like the world the kids love, soft enough to be clearly its own thing (see the originality rule in creatures.md).
 
 ## Colour
 

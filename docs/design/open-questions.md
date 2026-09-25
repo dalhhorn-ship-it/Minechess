@@ -34,7 +34,7 @@ The cost is one extra teaching pose per creature (8 in total), added in v1.0 wit
 
 ### Q7. Art approach: pixel or voxel drawn in code, or illustrated assets?
 
-**Open. Entry condition for v0.1:** must be answered before v0.1 build starts (PRD 9.8).
+**Resolved (owner, after the first build):** 3D block art drawn in code. The owner found the first flat pixel version "too pixely" and asked for a more block world look, so pieces and icons are extruded block figures, creatures are built from 3D boxes, and panels use an inventory style grey. The original recommendation below is kept for the record.
 
 **Recommendation: flat "soft block" vector art (SVG), built from reusable parts and animated in code.** Final choice of rendering tech stays with the solution-architect.
 

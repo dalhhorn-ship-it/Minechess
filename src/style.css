@@ -296,3 +296,43 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* ---------- lessons ---------- */
+
+.card { width: 210px; }
+.cards { gap: 24px; }
+.learn-pic { padding: 22px; }
+.learn-sub { height: auto; font-size: 15px; color: #3f3f3f; }
+
+.lessons {
+  display: grid;
+  grid-template-columns: 210px var(--lesson-board) 330px;
+  --lesson-board: min(calc(100dvh - 48px), calc(100vw - 210px - 330px - 72px));
+  justify-content: center; align-items: center; gap: 24px; padding: 24px;
+  background: linear-gradient(var(--sky), #a9dcf5 80%);
+}
+.lessons .board-wrap { width: var(--lesson-board); height: var(--lesson-board); }
+.lessons .side { height: var(--lesson-board); }
+.lesson-board { position: relative; }
+.lesson-board .arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.lesson-chapters { align-items: stretch; }
+.lesson-chapters .home { align-self: flex-start; }
+.chapter-btn {
+  display: flex; align-items: center; gap: 10px; min-height: 78px; padding: 8px 10px;
+  border: none; font: inherit; font-size: 17px; color: #fff; text-shadow: 2px 2px 0 #3f3f3f; text-align: left; cursor: pointer;
+}
+.chapter-btn.active { background: #5a8f3c; box-shadow: inset 3px 3px 0 #2f5a1c, inset -3px -3px 0 #a6e07a; }
+.chapter-icon { flex: 0 0 44px; height: 44px; }
+.lesson-text { align-items: stretch; padding: 18px; gap: 10px; }
+.lesson-title { margin: 0; font-size: 26px; color: #3f3f3f; }
+.lesson-body { flex: 1; overflow: auto; padding: 12px 14px; background: #fff; border: 3px solid #000; box-shadow: inset -3px -3px 0 #d0d0d0; font-size: 19px; line-height: 1.35; font-weight: 700; color: #1d2b4f; }
+.lesson-body p { margin: 0 0 10px; }
+.page-dots { display: flex; justify-content: center; gap: 8px; }
+.page-dots i { width: 14px; height: 14px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737; }
+.page-dots i.on { background: var(--gold); box-shadow: inset 2px 2px 0 #fff4c2, inset -2px -2px 0 #b8860b; }
+.lesson-nav { display: flex; justify-content: space-between; }
+.lesson-nav .btn { width: 110px; height: 84px; }
+.lesson-nav .btn.disabled { filter: grayscale(1) opacity(0.5); pointer-events: none; }
+.sq.hl-good::before { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(46, 158, 68, 0.45); }
+.sq.hl-bad::before { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(200, 16, 46, 0.4); }
+.sq.hl-gold::before { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(245, 200, 76, 0.55); }

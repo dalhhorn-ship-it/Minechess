@@ -29,7 +29,7 @@ function tree(): string {
   return `<svg viewBox="-2 -4 30 44" aria-hidden="true">${box(10, 22, 6, 16, 3, '#7a5530', 3)}${box(2, 4, 22, 18, 6, '#4f9a3a', 14)}</svg>`;
 }
 
-export function homeScreen(play: (id: CreatureId) => void): HTMLElement {
+export function homeScreen(play: (id: CreatureId) => void, learn: () => void): HTMLElement {
   const el = document.createElement('div');
   el.className = 'screen home';
   el.innerHTML = `
@@ -43,11 +43,18 @@ export function homeScreen(play: (id: CreatureId) => void): HTMLElement {
           <div class="stars">${Array.from({ length: 5 }, (_, s) => `<span class="${s < c.stars ? 'on' : 'off'}">${icon('star')}</span>`).join('')}</div>
           <div class="card-play">${icon('play')}</div>
         </button>`).join('')}
+      <button class="card panel learn-card" aria-label="Leren">
+        <div class="creature learn-pic">${icon('book')}</div>
+        <div class="card-name">Leren</div>
+        <div class="stars learn-sub">Zo speel je schaak</div>
+        <div class="card-play">${icon('play')}</div>
+      </button>
     </div>
     <div class="trees"><i class="tree t1">${tree()}</i><i class="tree t2">${tree()}</i></div>
     <div class="ground"></div>`;
-  el.querySelectorAll<HTMLElement>('.card').forEach((card) =>
+  el.querySelectorAll<HTMLElement>('.card[data-id]').forEach((card) =>
     card.addEventListener('click', () => play(card.dataset.id as CreatureId)),
   );
+  el.querySelector('.learn-card')!.addEventListener('click', learn);
   return el;
 }

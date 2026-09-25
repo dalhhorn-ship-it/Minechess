@@ -1,6 +1,6 @@
 # Minechess PRD
 
-Status: Draft v0.3, owner answers from round 2, red team and design review fixes included
+Status: Draft v0.4. v0.1 is built and live; waiting for the owner's iPad check and the kid playtest. Includes owner answers through round 3 (after the first build).
 Owner: product owner (parent)
 Date: 2026-09-25
 
@@ -199,6 +199,6 @@ Round 3 (after the first build): easy creatures resign only when hopeless, not a
 
 | # | Question | Who answers |
 |---|---|---|
-| Q7 | Art approach: pixel/voxel style drawn in code, or illustrated assets? **Must be answered before v0.1 starts.** | Designer, then solution-architect |
-| Q8 | Which chess engine approach (own simple engine vs an existing open engine with strength limits)? **Must be answered before v0.1 starts.** | Solution-architect |
+| Q7 | Art approach. **Answered:** 3D block art drawn in code (extruded block pieces and icons, creatures built from 3D boxes, inventory style panels), chosen by the owner after the first build looked too flat. | Done |
+| Q8 | Chess engine approach. **Answered:** own TypeScript engine (perft verified) with a rule set hook for mine chess; creature AI runs in a Web Worker. | Done |
 | Q9 | Which creature teaches in lessons and puzzles now that there is no separate coach (design recommends Wobble in its teaching pose, open question D10)? | Designer, then owner |
