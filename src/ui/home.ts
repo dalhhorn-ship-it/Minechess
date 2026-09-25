@@ -29,11 +29,12 @@ function tree(): string {
   return `<svg viewBox="-2 -4 30 44" aria-hidden="true">${box(10, 22, 6, 16, 3, '#7a5530', 3)}${box(2, 4, 22, 18, 6, '#4f9a3a', 14)}</svg>`;
 }
 
-export function homeScreen(play: (id: CreatureId) => void, learn: () => void): HTMLElement {
+export function homeScreen(play: (id: CreatureId) => void, learn: () => void, hall: () => void): HTMLElement {
   const el = document.createElement('div');
   el.className = 'screen home';
   el.innerHTML = `
     <div class="sky"><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i></div>
+    <button class="btn hall-btn" aria-label="Hall of Fame">${icon('trophy')}</button>
     <h1 class="title" aria-label="Minechess">${title('MINECHESS')}</h1>
     <div class="cards">
       ${CREATURES.map((c, i) => `
@@ -56,5 +57,6 @@ export function homeScreen(play: (id: CreatureId) => void, learn: () => void): H
     card.addEventListener('click', () => play(card.dataset.id as CreatureId)),
   );
   el.querySelector('.learn-card')!.addEventListener('click', learn);
+  el.querySelector('.hall-btn')!.addEventListener('click', hall);
   return el;
 }

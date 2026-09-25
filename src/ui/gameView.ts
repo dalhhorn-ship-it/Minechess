@@ -9,6 +9,9 @@ import { creatureSvg } from './creatureArt';
 import { icon } from './icons';
 import { LINE_ICON, LINES, type LineKey } from './lines';
 import { pieceSvg } from './pieces';
+import { scoreGame } from '../game/score';
+import { loadHall, qualifies } from '../game/hallOfFame';
+import type { NewScore } from './hallView';
 
 const MIN_THINK_MS = 800;
 const SLIDE_MS = 450;
@@ -20,6 +23,7 @@ const HOP_HINT_MS = 10000;
 export interface GameCallbacks {
   home(): void;
   play(creature: CreatureId): void;
+  hall(score: NewScore): void;
 }
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -492,6 +496,8 @@ export class GameView {
     const idx = CREATURES.findIndex((c) => c.id === this.creature);
     const next = CREATURES[idx + 1];
     const line = pickLine(LINES[this.creature][result.kind]);
+    const score = scoreGame(this.match);
+    const record = qualifies(score.total, loadHall());
     const picture =
       result.kind === 'win' ? `<div class="big-pic win">${icon('trophy')}</div>`
       : result.kind === 'loss' ? `<div class="big-pic loss">${icon('handshake')}</div>`
@@ -503,6 +509,8 @@ export class GameView {
           <div class="creature creature-${this.creature} emo-goodSport">${creatureSvg(this.creature, 'goodSport')}</div>
           <div class="bubble"><span class="bubble-icon">${icon('handshake')}</span><span class="bubble-text">${line}</span></div>
         </div>
+        <div class="result-score"><span class="count">0</span> punten</div>
+        ${record ? `<button class="btn big record blink" aria-label="Nieuw record">${icon('trophy')}<span>Record!</span></button>` : ''}
         <div class="result-buttons">
           <button class="btn go big rematch" aria-label="Nog een keer">${icon('play')}<span>Nog eens</span></button>
           ${result.kind === 'win' && next ? `<button class="btn big next" aria-label="Volgende">${icon('next')}<span>${next.name}</span></button>` : ''}
@@ -517,6 +525,15 @@ export class GameView {
     box.querySelector('.rematch')!.addEventListener('click', () => this.leave(() => this.cb.play(this.creature)));
     box.querySelector('.next')?.addEventListener('click', () => this.leave(() => this.cb.play(next!.id)));
     box.querySelector('.home2')!.addEventListener('click', () => this.leave(() => this.cb.home()));
+    box.querySelector('.record')?.addEventListener('click', () => this.leave(() => this.cb.hall({ score: score.total, creature: this.creature })));
+    const count = box.querySelector('.result-score .count')!;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / 1000);
+      count.textContent = String(Math.round(score.total * t));
+      if (t < 1 && this.el.isConnected) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   private confetti() {

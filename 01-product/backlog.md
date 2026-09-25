@@ -9,7 +9,8 @@ Ordered by priority. Sources: product director review after v0.1, owner feedback
 | 1 | Owner iPad check, Part A of `docs/test/playtest-v0.1.md` | Nothing has run on a real iPad yet |
 | 2 | Kid playtest, two short sessions per child (Part B) | v0.1 definition of done item 6; decides the v0.2 order |
 | 3 | Fix what the check, the playtest and the code review find | Keep v0.1 solid before adding more |
-| 4 | Strategy lessons in Dutch for ages 8 and up, reachable from the start screen (owner request, pulls part of F14 forward) | Owner asked for it; the owner wants to learn too |
+| 4 | **Done:** strategy lessons in Dutch for ages 8 and up, reachable from the start screen (owner request, pulls part of F14 forward) | Owner asked for it; the owner wants to learn too |
+| 4b | **Done:** old school hall of fame with points per game (owner request): top 10 on the iPad, three letter names | Gives both kids a reason to replay and beat their own score |
 
 ## Next: v0.2 part 1 **(sanction)**
 

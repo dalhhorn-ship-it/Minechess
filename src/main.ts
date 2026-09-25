@@ -3,6 +3,7 @@ import type { CreatureId } from './ai/creatures';
 import { GameView } from './ui/gameView';
 import { homeScreen } from './ui/home';
 import { LessonView } from './ui/lessonView';
+import { HallView, type NewScore } from './ui/hallView';
 import { icon } from './ui/icons';
 import { installTextures } from './ui/pixel';
 
@@ -31,7 +32,13 @@ for (const type of ['click', 'pointerdown']) {
 function home() {
   game?.destroy();
   game = null;
-  show(homeScreen(play, learn));
+  show(homeScreen(play, learn, () => hall()));
+}
+
+function hall(score?: NewScore) {
+  game?.destroy();
+  game = null;
+  show(new HallView(home, score).el);
 }
 
 function learn() {
@@ -42,7 +49,7 @@ function learn() {
 
 function play(id: CreatureId) {
   game?.destroy();
-  game = new GameView(id, { home, play });
+  game = new GameView(id, { home, play, hall });
   show(game.el);
 }
 
