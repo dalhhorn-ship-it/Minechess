@@ -1,7 +1,7 @@
 # Minechess Visual Language
 
-Status: design draft v0.1, based on PRD v0.2
-Author: ux-ipad-kids (design stage)
+Status: design draft v0.2, updated for PRD Draft v0.3
+Author: ux-ipad-kids (design stage), updated by product-manager for owner answers round 2
 Related: [screens.md](screens.md), [creatures.md](creatures.md), [open-questions.md](open-questions.md)
 
 ## The core idea
@@ -54,14 +54,16 @@ Blue and orange are the safest distinct pair across protanopia, deuteranopia and
 | Selected piece | Thick square frame (6 pt) on the square, piece lifted 6 pt with shadow | Blue `#1B4FA8` | Lift in 120 ms |
 | Legal move, empty square | Round dot, 28 percent of square width, 3 pt white halo | Blue `#1B4FA8` | Dots pop in with a 60 ms stagger from nearest to farthest |
 | Legal move, capture | Four corner brackets around the target piece, 2 pt ink outline | Orange `#E8741C` | Brackets pulse in once, then stay |
-| Last move (both sides) | Soft tint on from and to squares plus small corner ticks | Butter `#F2C94C` at 45 percent | Fades in over 200 ms, no pulse |
-| King in check | Eight point starburst behind the king | Red `#C8102E` with ink outline | King shakes twice, starburst pulses twice slowly, then stays still |
+| Last move (both sides) | Soft tint on from and to squares plus small corner ticks | Butter `#F2C94C` at 45 percent | Fades in over 200 ms, no pulse. The creature's from and to squares stay until the child completes their next move (AC-47) |
+| King in check (either king) | Eight point starburst behind the king | Red `#C8102E` with ink outline | King shakes twice, starburst pulses twice slowly, then stays still (AC-12) |
+| Whose turn | Ring around the avatar (child) or under the creature | Gold `#F5C84C` with ink outline | Soft glow; moves to the other side within 200 ms of each move (AC-49) |
+| Captured child piece | Puff of small blocks ("poof") | Piece colours | About 400 ms burst, then a small copy drops into the creature's tray (AC-48) |
 | Looking at moves on the creature's turn | Round dot, hollow ring instead of filled | Grey `#9AA3AF` | Pops in, no stagger |
-| Coach ghost arrows | Thick rounded arrow, semi transparent (60 percent) | Threat: orange. Good idea: gold | Arrow draws itself over 500 ms, loops twice |
+| Coach ghost arrows (v1.0) | Thick rounded arrow, semi transparent (60 percent) | Threat: orange. Good idea: gold | Arrow draws itself over 500 ms, loops twice; the creature's star pointer follows it |
 
 Contrast of markers: blue dot is 6.4 : 1 on sand; on stone blue it relies on its white halo. The orange brackets rely on their ink outline on both squares. Rule: **every marker has a halo or outline**, so no marker ever depends on the square colour behind it.
 
-Colour blind check: selected (frame), legal (dot), capture (brackets), last move (ticks), check (starburst) are five different shapes. The board passes a greyscale test: print it in grey and every state is still readable.
+Colour blind check: selected (frame), legal (dot), capture (brackets), last move (ticks), check (starburst), turn (ring) are six different shapes. The board passes a greyscale test: print it in grey and every state is still readable.
 
 ### Colour meaning is fixed across the game
 
@@ -71,7 +73,7 @@ Colour blind check: selected (frame), legal (dot), capture (brackets), last move
 | Blue | Your piece and your moves, oops button | The creature's things |
 | Orange | Something can be captured, or a threat to you (coach arrows) | Buttons |
 | Red | Your king is in check; delete (parent only) | Mistakes, wrong taps (these are never red) |
-| Gold | Rewards: stars, medals, next creature glow, good idea arrows | Warnings |
+| Gold | Rewards: stars, medals, next creature glow, good idea arrows; the turn ring | Warnings |
 | Grey | Disabled, parent area | Anything a child should tap |
 
 ## Piece style
@@ -88,19 +90,20 @@ Colour blind check: selected (frame), legal (dot), capture (brackets), last move
 | Element | Minimum | Target | Spacing |
 |---|---|---|---|
 | Child buttons (house, oops, coach, play arrow, cards) | 75 × 75 pt | 80 to 160 pt | 16 pt between targets |
-| Board squares | 60 pt (hard floor) | 72 to 88 pt on reference devices | none (the grid is the target) |
+| Board squares | 60 pt (hard floor, on the iPad mini) | 72 to 88 pt on reference devices | none (the grid is the target) |
 | Promotion piece buttons | 90 × 90 pt | 100 × 100 pt | 20 pt |
 | Parent gear | 44 × 44 pt | 56 × 56 pt | 24 pt from edges |
 | Parent settings controls | 44 × 44 pt | 48 to 60 pt | 12 pt |
-| Keypad keys (parent gate) | 64 × 64 pt | 80 × 80 pt | 12 pt |
+| Keypad keys (parent PIN pad) | 64 × 64 pt | 80 × 80 pt | 12 pt |
 
-These go beyond AC-11 (44 pt) because the `ux-ipad-kids` rule for young children is about 75 pt. Other rules:
+These match AC-11 (child controls 75 pt, board squares 60 pt, parent controls 44 pt, measured on the iPad mini), following the `ux-ipad-kids` rule for young children. Other rules:
 
 1. No child control within 24 pt of any screen edge, and none in the bottom 40 pt near the home indicator.
 2. Hit areas can be larger than the drawn shape (for example the oops tokens are part of the oops button's hit area).
 3. Drag uses a snap radius of half a square: releasing within it lands on the nearest legal square. Releasing elsewhere returns the piece home in 200 ms.
 4. A tap is accepted on touch up, and a touch that moves less than 10 pt still counts as a tap, so shaky fingers work.
 5. Only one finger is read at a time. A second finger (a hand resting on the screen) is ignored.
+6. No browser gestures during play (AC-50): touches never scroll or zoom the page, select text, open a callout or copy menu, or navigate back.
 
 ## Motion
 
@@ -110,9 +113,9 @@ Motion is our voice, so it has to be consistent, calm and fast.
 |---|---|
 | Feedback on touch down | Within 100 ms: the touched thing squashes 5 percent or lifts |
 | Piece move | 250 ms ease out along a straight line (knight hops in an arc) |
-| Creature move | Same as the child's, plus the piece glows briefly on pickup so the eye follows it |
-| Oops rewind | Each of the two moves plays backwards in 300 ms |
-| Creature reaction | 2 seconds or less, never blocks input (AC-19) |
+| Creature move | At least 400 ms along a straight line (knight in an arc), slower than the child's so the eye can follow it without sound; the piece glows briefly on pickup (AC-46) |
+| Oops rewind | Each move of the undone pair plays backwards in 300 ms (only the child's move when oops cancels the creature's thinking) |
+| Creature reaction | One emotion per half move, 2 seconds or less, never blocks input (AC-18, AC-19). The resign Sad at game end runs about 3 s |
 | Screen transitions | 300 ms slide in the direction of travel: deeper screens slide in from the right, going back slides to the right |
 | Idle loops | Small amplitude (under 5 percent of the creature's size), cycles of 2 to 4 seconds |
 | Celebrations | Up to 2.5 seconds, blocky confetti falls slowly; never full screen flashes |
@@ -126,8 +129,12 @@ Hierarchy of motion: **only one thing moves strongly at a time.** When the creat
 
 | Meaning | Shape | Motion | Where |
 |---|---|---|---|
-| It is your turn | Creature looks at your pieces; pointing hand bubble | Creature leans toward the board | Creature panel |
-| The creature is thinking | Thought cloud with three dots | Dots rise; creature sways | Creature panel |
+| It is your turn | Gold turn ring around your avatar; creature looks at your pieces; pointing hand bubble | Creature leans toward the board | Child side and creature panel |
+| The creature is thinking | Gold turn ring under the creature; thought cloud with three dots | Dots rise; creature sways | Creature panel |
+| The creature moved here | Glowing piece, lasting tint and ticks on its from and to squares | Slow slide (400 ms or more) | Board |
+| The creature took your piece | Puff of blocks | Poof, then the piece drops into the creature's tray | Board and creature side |
+| The creature is teaching you (v1.0, not an emotion) | Teaching pose: side on, glasses, star pointer; lightbulb icon | Pointer follows the ghost arrow | Creature panel and board |
+| The creature gave up | King lying down, small white flag, big Sad | About 3 s | Board and creature panel |
 | This can be tapped | Bright fill, thick outline, raised 3D look | Gentle bounce or hop hint after inactivity | Everywhere |
 | This cannot be tapped now | Grey, flat, no raised look | None; a small head shake wiggle on tap | Everywhere |
 | Where a piece can go | Blue dots | Pop in | Board |
@@ -136,11 +143,11 @@ Hierarchy of motion: **only one thing moves strongly at a time.** When the creat
 | You did something great | Creature Surprised pose, burst bubble | Creature jumps back | Creature panel |
 | You are winning material | Your tray fills with the creature's pieces | Pieces fly into your tray | Child side |
 | You made a mistake (coach) | Orange ghost arrow shows the threat | Arrow draws itself twice | Board and tip card |
-| You can take it back | Oops button glows, tip card arrow points at it | One glow pulse | Child side |
+| You can take it back | Oops button glows, tip card arrow points at it | One glow pulse (slow repeated glow during a held checkmate) | Child side |
 | No take backs left | Empty dashed sockets, grey button | Shrug wiggle on tap | Child side |
 | You won | Your avatar on a podium with a gold medal; creature sad | Confetti, medal drops | Result |
 | You lost, and that is OK | Creature does a thumbs up, gives a handshake | Short creature dance, then a warm wave | Result |
-| Draw | Handshake plus a picture of the reason | Handshake animation | Result |
+| Draw | Good sport pose, handshake plus a picture of the reason that needs no reading | Handshake animation | Result |
 | New creature unlocked | Padlock pops open, creature steps out | 2.5 second unlock scene | Result overlay, ladder |
 | Locked | Dark silhouette with a padlock | Padlock wiggles on tap | Ladder |
 | Where am I | Each screen type has its own background and hero (see below) | none | All |
@@ -153,8 +160,8 @@ Hierarchy of motion: **only one thing moves strongly at a time.** When the creat
 | Profile picker | Meadow with beaten creatures wandering | Avatars |
 | Home (ladder) | Sky with stepping stone blocks climbing up | Glowing next creature |
 | Game | Calm backdrop in a pale version of the creature's accent colour | The creature |
-| Lessons | Warm wood room with a dark blue chalkboard | Pip with the book |
-| Puzzles | Warm yellow room with jigsaw pattern | Pip with a jigsaw piece |
+| Lessons | Warm wood room with a dark blue chalkboard | The teaching creature with the book (open question D10) |
+| Puzzles | Warm yellow room with jigsaw pattern | The teaching creature with a jigsaw piece |
 | Parent area | Plain grey and white, no creatures | none |
 
 ## Text on screen
@@ -164,4 +171,4 @@ Text is support, never the message.
 1. Typeface: a rounded sans serif with a simple "a" and "g" that beginning readers recognise (for example Andika or Nunito, both open licensed and self hosted, no third party font requests).
 2. Speech bubbles 24 pt, labels 20 pt, parent area 17 pt minimum.
 3. Every child facing text sits next to a picture that means the same thing.
-4. No numbers are shown to children where a picture can do the job (stars, tokens, medals). The parent gate is the only place with sums.
+4. No numbers are shown to children where a picture can do the job (stars, tokens, medals). The parent area is the only place with digits (the PIN pad and the forgot PIN sum).

@@ -1,12 +1,14 @@
 # Minechess Creature Sheets
 
-Status: design draft v0.1, based on PRD v0.2 sections 5 and 6
-Author: ux-ipad-kids (design stage)
+Status: design draft v0.2, updated for PRD Draft v0.3 sections 5 and 6
+Author: ux-ipad-kids (design stage), updated by product-manager for owner answers round 2
 Related: [visual-language.md](visual-language.md), [screens.md](screens.md), [open-questions.md](open-questions.md)
 
 ## Why the creatures matter so much here
 
 The game is silent and Noor cannot read. The creature's face and body are the main way she knows what is happening: "I did something good" (Surprised, Worried), "it is my turn" (idle, looking at me), "it is thinking" (Thinking). Every emotion therefore needs a pose you can read from across the room, plus a bubble icon that means the same thing for every creature. The words in the bubble are a bonus for Sam.
+
+The creature is also the coach (PRD section 7.6, open question Q6). Coaching always uses the separate teaching pose below, never an emotion face, so "how the game is going" and "let me show you something" never look alike.
 
 ## Shared rules for all creatures
 
@@ -14,33 +16,37 @@ The game is silent and Noor cannot read. The creature's face and body are the ma
 
 Every creature must pass all of these before art is approved:
 
-1. No Minecraft name, texture, logo, sound or silhouette.
+1. No Minecraft name, texture, logo, sound or silhouette. No on screen descriptor may point at a Minecraft mob (for example, Wobble is "the Jelly Cube", never "Slime Cube").
 2. **No noisy pixel textures.** Surfaces are flat colour blocks with at most one lighter top face tone and one darker side tone. No 16 × 16 style speckled textures.
 3. **Rounded blocks.** Every cube has softly rounded corners (about 12 percent of its edge length). This alone moves the look away from Minecraft's hard voxels.
 4. **Big round eyes with a highlight**, never square pixel eyes.
-5. The inspiration named in the PRD is only a starting idea. Each sheet lists "moved away from" points that break the link to the original mob.
+5. The inspiration named in the PRD is only a starting idea and is never shown on screen. Each sheet lists "moved away from" points that break the link to the original mob.
 6. The designer checks each final creature side by side with the Minecraft mob it was inspired by; if a child could name the Minecraft mob from the silhouette alone, it fails.
 
 ### Shared face and body rig (reusable parts, PRD risk "art volume")
 
-All creatures are built from the same set of swappable face parts and body poses, drawn per creature in its own style. This turns 8 × 8 = 64 illustrations into 8 bodies plus one parts kit each.
+All creatures are built from the same set of swappable face parts and body poses, drawn per creature in its own style. This turns about 80 illustrations into 8 bodies plus one parts kit each.
 
-| Emotion | Eyes | Brows | Mouth | Body motion (2 seconds or less) |
-|---|---|---|---|---|
-| Neutral / idle | Open, blinking every 3 to 5 s, looking at the child's side | Relaxed | Small smile | Personality idle loop (see each sheet) |
-| Thinking | Looking up and to the side, slow drift | One raised | Pursed, to one side | Slow sway, thought dots rise |
-| Happy | Closed upward arcs | Raised | Wide open smile | One hop with squash on landing |
-| Worried | Wide, pupils small, darting | Tilted up in the middle | Wavy line | Shrinks 10 percent, small shiver, sweat drop slides down |
-| Surprised | Very wide, round | High | Round "O" | Jumps back and up, freezes for 0.3 s, settles |
-| Sad | Half closed, looking down | Tilted down at the outer ends | Small frown | Sags down slowly, a small raincloud drifts over |
-| Celebrating | Closed arcs or sparkle eyes | Raised | Huge grin | Jump with a spin, blocky confetti from above |
-| Good sport | Soft, open, looking at the child | Relaxed | Warm smile | Steps toward the child, bows or waves, holds out a hand or a medal |
+| Emotion or pose | First version | Eyes | Brows | Mouth | Body motion (2 seconds or less during play) |
+|---|---|---|---|---|---|
+| Neutral / idle | v0.1 | Open, blinking every 3 to 5 s, looking at the child's side | Relaxed | Small smile | Personality idle loop (see each sheet) |
+| Thinking | v0.1 | Looking up and to the side, slow drift | One raised | Pursed, to one side | Slow sway, thought dots rise |
+| Happy | v0.1 | Closed upward arcs | Raised | Wide open smile | One hop with squash on landing |
+| Sad | v0.1 | Half closed, looking down | Tilted down at the outer ends | Small frown | Sags down slowly, a small raincloud drifts over. Short variant (about 1 s, no raincloud, no bubble) stands in for Worried and Surprised in v0.1 |
+| Sad, resign (big) | v0.1 (Levels 1 and 2 only) | Closed, squeezed | Tilted down | Wobbly frown | About 3 s: lays its king down, waves a small white flag, then its own signature Sad touch, bigger |
+| Celebrating | v0.1 | Closed arcs or sparkle eyes | Raised | Huge grin | Jump with a spin, blocky confetti from above |
+| Good sport (result pose) | v0.1 | Soft, open, looking at the child | Relaxed | Warm smile | Steps toward the child, bows or waves, holds out a hand (handshake) or a medal |
+| Worried | v0.2 | Wide, pupils small, darting | Tilted up in the middle | Wavy line | Shrinks 10 percent, small shiver, sweat drop slides down |
+| Surprised | v0.2 | Very wide, round | High | Round "O" | Jumps back and up, freezes for 0.3 s, settles |
+| Teaching pose (not an emotion) | v1.0 | Calm, open, looking at the board | Relaxed | Small closed smile | Turns side on toward the board, small round teaching glasses on, holds a pointer stick with a star tip that follows the ghost arrow |
+
+The teaching pose must be visually distinct from every emotion: side on body, glasses and pointer appear in no other pose, and the face stays neutral. It is drawn once per creature in its own style (for example, Triple Shade's middle head wears the glasses and holds the pointer in its mouth; Deep Watcher's floating hand holds the pointer).
 
 ### Shared bubble icons
 
 The icon sits on the left inside every bubble, 48 pt, and is the same for every creature so Noor can learn it once. The icon is tinted with the creature's accent colour; its shape never changes.
 
-| Emotion | Bubble icon | Meaning a child learns |
+| Emotion or pose | Bubble icon | Meaning a child learns |
 |---|---|---|
 | Neutral / idle | Pointing hand toward the child's pieces | "Your turn" |
 | Thinking | Cloud with three dots | "Wait, it is thinking" |
@@ -48,36 +54,46 @@ The icon sits on the left inside every bubble, 48 pt, and is the same for every 
 | Worried | Falling sweat drop | "It is in trouble" (good news for the child) |
 | Surprised | Spiky burst with "!" | "You did something great" |
 | Sad | Small raincloud | "It lost" |
+| Sad, resign | Small white flag | "It gave up, you won" |
 | Celebrating | Trophy with confetti | "It won" |
-| Good sport | Handshake | "Friends again, play again?" |
+| Good sport | Handshake | "Friends again, play again?" (also the draw icon) |
+| Teaching pose | Lightbulb, used for nothing else | "Look, I'll show you something" |
 | Oops reaction (extra, see below) | Rewind swirl (curved double arrow) | "We went back in time" |
 
-Bubble layout: rounded rectangle, white fill, 3 pt navy outline, 24 pt text in the active language to the right of the icon, max two lines, tail pointing at the creature's mouth. Shows for the length of the emotion (2 seconds or less), fades out over 200 ms.
+Bubble layout: rounded rectangle, white fill, 3 pt navy outline, 24 pt text in the active language to the right of the icon, max two lines, tail pointing at the creature's mouth. Shows for the length of the emotion (2 seconds or less), fades out over 200 ms. Teaching tips do not use this bubble; they use the tip card (screens.md, S7).
 
-### When each emotion plays (resolving overlaps in PRD section 6)
+### When each emotion plays (PRD section 6.1)
 
-Several triggers can fire on one move. One move produces at most one reaction sequence, never longer than 2 seconds in total.
+Every half move produces exactly one emotion. When several events happen on one half move, the highest priority wins. Piece values: pawn 1, knight 3, bishop 3, rook 5, queen 9.
 
-1. **Game end** beats everything: Sad, Celebrating, or (draw) Good sport.
-2. **Child's move is strong and hurts the creature** (for example the child captures a queen with check): **Surprised for 0.8 s, then Worried for 1.2 s**, one bubble (the Surprised line) so the child's great move is praised first.
-3. **Creature in check or loses a valuable piece** (knight or better) without a strong child move: Worried.
-4. **Child makes a strong move** that does not hurt the creature yet (for example a fork): Surprised.
-5. **Creature captures or gives check:** Happy.
-6. **Creature choosing a move:** Thinking, for at least 0.6 s so the child sees it, even when the engine is faster.
-7. **Waiting for the child:** Neutral / idle. The idle bubble appears only at the start of the child's turn in the first 3 moves of a game, and again after 15 seconds without input, so the screen stays calm.
-8. **Rate limit:** no more than one bubble every 4 seconds outside game end; emotion animations may still play without a bubble.
+| Priority | Event on this half move | Child moved | Creature moved |
+|---|---|---|---|
+| 1 | Result | Child wins: Sad (resignation: Sad, resign). Draw: Good sport | Creature wins: Celebrating. Draw: Good sport |
+| 2 | Check | Worried | Happy |
+| 3 | Capture worth 5 or more points | Surprised | Happy |
+| 4 | Any other capture | Worried | Happy |
+| 5 | Nothing above | Idle, then Thinking while the creature chooses | Idle |
+
+Further rules:
+
+1. **v0.1 fallback:** until Worried and Surprised exist (v0.2), their events play the short Sad variant.
+2. **Thinking** shows for at least 0.8 s so the child sees it, even when the engine is faster, and the move starts within 3 s (AC-13).
+3. **Idle bubble** appears only at the start of the child's turn in the first 3 moves of a game, and again after 15 seconds without input, so the screen stays calm.
+4. **Rate limit:** no more than one bubble every 4 seconds outside game end; emotion animations may still play without a bubble.
+5. **Coach tips** (v1.0) start only after the half move's emotion has finished; while a tip is open the creature holds the teaching pose and plays no emotion (AC-62).
+6. **Held checkmate** (AC-64): the creature plays Celebrating once, then holds idle while the child chooses between oops and "see result".
 
 ### Oops reaction
 
-When the child uses an oops credit, the creature plays a light Surprised variant (spins once like a rewinding tape) with the rewind swirl icon. Lines per creature are in each sheet. This is not a ninth emotion; it reuses the Surprised face parts.
+When the child uses an oops credit, the creature plays a light Surprised variant (spins once like a rewinding tape) with the rewind swirl icon, then returns to idle (AC-66). In v0.1, before Surprised exists, the idle pose does the same rewind spin. Lines per creature are in each sheet. This is not an extra emotion; it reuses existing face parts.
 
-### Line rules (PRD section 6)
+### Line rules (PRD section 6.3)
 
-Every line is 6 words or fewer in both languages, uses simple words a beginning reader can sound out, and any teasing is aimed at the creature itself. Good sport lines are split into "child won" (W) and "child lost" (L). Word counts were checked for every line in this file.
+Every line is 6 words or fewer in both languages, uses simple words a beginning reader can sound out, and any teasing is aimed at the creature itself. Good sport lines are split into "child won" (W), "child lost" (L) and "draw" (D). Only Levels 1 and 2 have a "Sad (resign)" line, because only they resign. v0.1 ships the Dutch lines only; English lines are needed from v0.2. Word counts were checked for every line in this file.
 
 ---
 
-## 1. Wobble the Slime Cube (Level 1, very weak, random)
+## 1. Wobble the Jelly Cube (Level 1, 1 star, random, v0.1)
 
 **Look:** a soft, rounded jelly like cube, about as wide as it is tall, with a glossy highlight on its top left corner and two tiny drip "feet" at the bottom. Big round eyes with white highlights sit high on the front face; a small open mouth giggles. A little leaf sprout grows from the top and flops as it bounces. Slightly see through at the edges only (a lighter rim), solid in the middle.
 **Moved away from:** the green slime cube. Wobble is pink, has rounded corners, a leaf sprout, drip feet, no inner cube and no square eyes.
@@ -100,13 +116,15 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Surprised | Burst | Boing?! That was clever! | Boing?! Dat was slim! |
 | Sad | Raincloud | Splat. You beat me! | Plets. Jij hebt gewonnen! |
 | Sad | Raincloud | I melted a little. | Ik smelt een beetje. |
+| Sad (resign) | White flag | I give up! You win! | Ik geef op! Jij wint! |
 | Celebrating | Trophy | I won? Hee hee! | Ik won? Hihi! |
 | Celebrating | Trophy | Bouncy bouncy win! | Stuiter stuiter, gewonnen! |
 | Good sport (W) | Handshake | You play great! Again? | Jij speelt super! Nog eens? |
 | Good sport (L) | Handshake | Nice game! One more? | Leuk potje! Nog eentje? |
+| Good sport (D) | Handshake | A tie! Boing boing! | Gelijk! Boing boing! |
 | Oops | Rewind swirl | Boing! Back we go! | Boing! Terug maar! |
 
-## 2. Clucky the Block Hen (Level 2, very weak, defensive and panicky)
+## 2. Clucky the Block Hen (Level 2, 1 star, defensive and panicky, v0.1)
 
 **Look:** a round cornered yellow block body with a smaller block head, a big orange beak, and a half eggshell worn as a helmet (her "defence"). Short chunky legs, two stubby wings that flap when nervous. Brown speckles in three fixed spots on the body (drawn shapes, not a texture).
 **Moved away from:** the white chicken with red wattle. Clucky is buttercup yellow with an eggshell helmet, no wattle, no red, rounder proportions.
@@ -129,13 +147,15 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Surprised | Burst | Eek! I did not see that! | Iek! Dat zag ik niet! |
 | Sad | Raincloud | Oh dear. You got me! | Oh jee. Je hebt me! |
 | Sad | Raincloud | Feathers everywhere. You win! | Overal veren. Jij wint! |
+| Sad (resign) | White flag | I give up! Cluck! | Ik geef op! Tok! |
 | Celebrating | Trophy | I won? I WON! Cluck! | Ik won? Ik WON! Tok! |
 | Celebrating | Trophy | Happy hen dance! | Blije kippendans! |
 | Good sport (W) | Handshake | You were so brave! | Jij was zo dapper! |
 | Good sport (L) | Handshake | Good game! Play again? | Goed gespeeld! Nog eens? |
+| Good sport (D) | Handshake | Nobody won. Phew! | Niemand won. Pfoe! |
 | Oops | Rewind swirl | Phew! Back again! | Pfoe! Weer terug! |
 
-## 3. Fizz the Fizzy Block (Level 3, weak, aggressive and reckless)
+## 3. Fizz the Fizzy Block (Level 3, 2 stars, aggressive and reckless, v0.2)
 
 **Look:** a tall, round cornered block shaped a bit like a soda can on two short legs, bright orange with a white wavy stripe around its middle. A steady stream of round bubbles rises from its top like a fizzing tablet. Wide happy grin, eyebrows always ready to charge.
 **Moved away from:** the green, four legged, sad faced block critter that explodes. Fizz is orange, has two legs and a grin, and its theme is fizz and bubbles, never explosions or hissing.
@@ -162,9 +182,10 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Celebrating | Trophy | Bubble party! | Bubbelfeest! |
 | Good sport (W) | Handshake | You stopped me! Cool! | Jij hield me tegen! Cool! |
 | Good sport (L) | Handshake | Fun game! Charge again? | Leuk potje! Nog een keer? |
+| Good sport (D) | Handshake | Even! Bubble high five! | Gelijk! Bubbel high five! |
 | Oops | Rewind swirl | Whoosh! Bubbles go back! | Woesj! Bubbels terug! |
 
-## 4. Muddle the Mole (Level 4, weak, silly)
+## 4. Muddle the Mole (Level 4, 2 stars, silly, v0.2)
 
 **Look:** a chubby, round cornered brown block with a pink star shaped nose, big round glasses, and a small yellow digger's helmet with a lamp that is usually pointing the wrong way. Two broad pink digging paws. A small dirt mound sits at its feet.
 **Moved away from:** no Minecraft mob is a mole; still no pickaxe, no block textures, no ores.
@@ -191,20 +212,21 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Celebrating | Trophy | Happy digging dance! | Blij graafdansje! |
 | Good sport (W) | Handshake | You beat me! Well done! | Jij versloeg me! Knap gedaan! |
 | Good sport (L) | Handshake | Fun! Let's dig again! | Leuk! Nog eens graven! |
+| Good sport (D) | Handshake | Nobody won? Dig again! | Niemand won? Nog eens graven! |
 | Oops | Rewind swirl | Huh? This looks familiar! | Hè? Dit ken ik! |
 
-## 5. Copper Bot (Level 5, easy, curious)
+## 5. Copper Bot (Level 5, 3 stars, curious, v0.1)
 
 **Look:** a small, round cornered robot made of two stacked blocks (head and body) in warm copper with a paler top face. One big round lens eye and one small round eye, so it always looks curious. A springy antenna with a round bulb on top. One hand holds a magnifying glass; the other is a simple clamp. Four round rivets on the body front, a small screen on its chest that shows simple pictures (heart, question mark, star) matching the emotion.
 **Moved away from:** the copper golem. No lightning rod, no green oxidation stages, no button pressing. Copper Bot is defined by the magnifier, the uneven eyes and the chest screen.
 **Palette:** copper `#D9824B` (body), light copper `#F2B48A` (top faces), dark copper `#9C5530` (side shade), steel `#8E9AAF` (antenna, clamp), chest screen mint `#9EE6C9` on navy `#1D2B4F`, accent `#E07A3F`.
-**Personality:** a friendly scientist; every move is an experiment, every loss is data.
+**Personality:** a friendly scientist; every move is an experiment. It pokes at the child's pieces to see what happens (Curious style, PRD section 5), which is why it leaves pieces loose.
 **Idle loop:** holds the magnifier up to one of the child's pieces, antenna bobs, chest screen shows a question mark.
 **Signature touches:** Thinking, the chest screen shows turning gears. Happy, antenna bulb lights up (steady glow, no flashing). Worried, the antenna droops. Surprised, the big lens eye zooms (grows). Sad, it sits down and writes a note on its chest screen.
 
 | Emotion | Icon | English | Dutch |
 |---|---|---|---|
-| Neutral / idle | Pointing hand | Your turn. I'm watching... learning! | Jij bent. Ik kijk en leer! |
+| Neutral / idle | Pointing hand | Your turn. I'm watching closely! | Jij bent. Ik kijk goed! |
 | Neutral / idle | Pointing hand | Beep. Your move, friend. | Biep. Jouw zet, vriend. |
 | Thinking | Cloud, three dots | Beep boop... calculating... | Biep boep... even rekenen... |
 | Thinking | Cloud, three dots | Let me look closer. | Even goed kijken. |
@@ -220,9 +242,10 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Celebrating | Trophy | My lights are dancing! | Mijn lampjes dansen! |
 | Good sport (W) | Handshake | You taught me something! | Jij leerde mij iets! |
 | Good sport (L) | Handshake | Good game! Test again? | Goed potje! Nog een test? |
+| Good sport (D) | Handshake | Result: a tie! Interesting! | Uitslag: gelijk! Interessant! |
 | Oops | Rewind swirl | Rewinding tape... beep! | Terugspoelen... biep! |
 
-## 6. Iron Guardian (Level 6, medium, defensive and protective)
+## 6. Iron Guardian (Level 6, 4 stars, defensive and protective, v1.0)
 
 **Look:** short, broad and stocky, built from wide rounded blocks in cool steel blue. A flat visor with two round friendly eyes glowing warm yellow behind it. It carries a big round shield with a simple star emblem in front of its body. A small red plume on top of the helmet. Short, strong arms and legs.
 **Moved away from:** the tall grey iron golem with long arms, a big nose and vines. The Guardian is short and wide, blue steel, visored, carries a shield, has a plume and no nose or plants.
@@ -249,9 +272,10 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Celebrating | Trophy | Clang clang! Party time! | Klang klang! Feest! |
 | Good sport (W) | Handshake | You broke my wall. Wow! | Jij brak mijn muur. Wauw! |
 | Good sport (L) | Handshake | Well fought! Try again? | Goed gevochten! Nog eens? |
+| Good sport (D) | Handshake | Two walls held. Well done! | Twee muren hielden. Goed zo! |
 | Oops | Rewind swirl | Clang! Walls back up! | Klang! Muur staat weer! |
 
-## 7. Triple Shade (Level 7, hard, aggressive)
+## 7. Triple Shade (Level 7, 4 stars, aggressive, v1.0)
 
 **Look:** a friendly blocky three headed serpent. A round cornered body block in deep violet with a lighter lavender belly, three necks rising from it, each ending in a rounded block head with big teal eyes. The left head always grins, the middle head concentrates (tongue out), the right head is sleepy and yawns. Small soft spikes along the necks, drawn as rounded bumps.
 **Moved away from:** the black, skull headed, flying three headed boss. Triple Shade is violet and lavender, has necks and a body on the ground, no skulls, no black, no floating, no projectiles.
@@ -278,9 +302,10 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Celebrating | Trophy | Three heads, one win! | Drie hoofden, een winst! |
 | Good sport (W) | Handshake | You were the hunter! Amazing! | Jij was de jager! Geweldig! |
 | Good sport (L) | Handshake | Great fight! Once more? | Mooi gevecht! Nog een keer? |
+| Good sport (D) | Handshake | Tie! Four heads, one handshake! | Gelijk! Vier hoofden, één hand! |
 | Oops | Rewind swirl | Wait! Rewind times three! | Wacht! Drie keer terug! |
 
-## 8. Deep Watcher (Level 8, very hard, patient and smart)
+## 8. Deep Watcher (Level 8, 5 stars, patient, v0.2)
 
 **Look:** a tall, calm stone block that floats a little above the ground, deep midnight blue with tiny soft gold specks inside like a night sky. One large round eye in the middle of its front face, gold with a navy pupil, that opens and closes slowly. Two small floating stone "hands" hover beside it. A thin gold ring slowly orbits its top.
 **Moved away from:** the dark teal, eyeless guardian with a glowing chest and ear tendrils. Deep Watcher has one big eye (the opposite of eyeless), is navy and gold, floats, has no chest glow, no tendrils, no teal and no scary sounds or darkness effects.
@@ -307,20 +332,15 @@ Every line is 6 words or fewer in both languages, uses simple words a beginning 
 | Celebrating | Trophy | Patience wins again. | Geduld wint weer. |
 | Good sport (W) | Handshake | You are a true champion. | Jij bent een echte kampioen. |
 | Good sport (L) | Handshake | You grow stronger. Come back. | Jij wordt sterker. Kom terug. |
+| Good sport (D) | Handshake | Balanced, like the deep. Well played. | In balans, net als de diepte. |
 | Oops | Rewind swirl | Time flows back. Try again. | De tijd stroomt terug. |
 
 ---
 
-## Coach: Pip the Block Owl (proposal, see open question Q6)
-
-**Look:** a small, round cornered cream block owl with big round amber eyes, a tiny orange beak, and a teal graduation style cap. Much smaller than the opponent creatures and always on the child's side of the screen, so a child never confuses the coach with the opponent.
-**Palette:** cream `#FFF4DC`, wing tan `#D9B98B`, beak orange `#FB8C00`, eyes amber `#FFB300`, cap teal `#1F9E9E`.
-**States (few, to keep art small):** sitting, pointing (wing points at the board), cheering (wings up), try again (wing draws a circular arrow), asleep (coach tips off).
-**Bubble icon:** a lightbulb, used only by Pip, so the child can tell coach tips from creature bubbles.
-
 ## Art production notes
 
 1. Build every creature from the shared rig: one body, per creature eye, brow and mouth sets, and the shared body motions from the rig table. Signature touches are extra layers on top.
-2. v0.1 needs only Wobble, Copper Bot and Deep Watcher (versions.md); make those first to validate the rig.
-3. Each creature also needs: a ladder card pose (idle), a locked silhouette (single dark shape), a Result pose for win and lose, and a small head for the paused badge and the portrait tip state.
-4. All line keys go into the copy file as `creature.<id>.<emotion>.<n>` in both languages; the owner reviews both (PRD section 9.7).
+2. v0.1 needs only Wobble, Clucky and Copper Bot (versions.md), each with idle, thinking, happy, sad (including the short variant), celebrating and the Good sport pose, plus the big resign Sad for Wobble and Clucky. Make those first to validate the rig.
+3. v0.2 adds Worried and Surprised for all creatures so far, plus Fizz, Muddle and Deep Watcher. v1.0 adds Iron Guardian, Triple Shade and the teaching pose for all 8.
+4. Each creature also needs: a ladder card pose (idle), a locked silhouette (single dark shape), a Result pose for win and lose, and a small head for the paused badge and the portrait tip state.
+5. All line keys go into the copy file as `creature.<id>.<emotion>.<n>` in both languages; the owner reviews both (PRD section 9.7).

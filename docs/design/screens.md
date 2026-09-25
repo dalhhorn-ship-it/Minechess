@@ -1,16 +1,16 @@
 # Minechess Screen Specs
 
-Status: design draft v0.1, based on PRD v0.2
-Author: ux-ipad-kids (design stage)
+Status: design draft v0.2, updated for PRD Draft v0.3
+Author: ux-ipad-kids (design stage), updated by product-manager for owner answers round 2
 Related: [flows.md](flows.md), [creatures.md](creatures.md), [visual-language.md](visual-language.md), [open-questions.md](open-questions.md)
 
 ## How to read this file
 
-Each screen lists its purpose, its one primary action, the layout regions in landscape and portrait, what Noor (5, cannot read) and Sam (9, reads) get out of it, and its states. Sizes are in iOS points (pt). Reference viewports are the smallest supported iPads in Safari with toolbars showing:
+Each screen lists its purpose, its one primary action, the layout regions in landscape and portrait (portrait from v0.2; v0.1 is landscape only and shows a "turn the iPad" picture in portrait), what Noor (5, cannot read) and Sam (9, reads) get out of it, and its states. Sizes are in iOS points (pt). Reference viewports are the smallest supported iPads in Safari with toolbars showing:
 
 | Device (2019 or later) | Landscape usable area | Portrait usable area |
 |---|---|---|
-| iPad mini 5 | about 1024 × 690 | about 768 × 950 |
+| iPad mini 5 (smallest supported, used for AC-11) | about 1024 × 690 | about 768 × 950 |
 | iPad 10.2 inch | about 1080 × 740 | about 810 × 1010 |
 | iPad Air / 11 inch | about 1180 × 760 | about 820 × 1110 |
 
@@ -21,13 +21,16 @@ Global rules for every screen:
 3. **Child controls** are at least 75 × 75 pt with at least 16 pt between targets. Nothing interactive sits within 24 pt of any screen edge or within the home indicator area.
 4. **One primary action per screen**, drawn as the brightest element (green with a white play arrow, or the glowing next creature).
 5. **No text is needed to understand any child screen.** Text appears only as a label under a picture, for Sam and for parents.
-6. Layout adapts live on rotation; nothing is lost when the iPad turns.
+6. Layout adapts live on rotation; nothing is lost when the iPad turns (v0.2).
+7. **No browser gestures in the game** (AC-50): no page scroll, zoom, text selection, callout or copy menu, and no edge swipe back navigation from touches.
+8. The game is meant to be launched from its home screen icon (PRD 9.3), so it runs full screen with no Safari toolbars.
 
 ## Screen index
 
 | # | Screen | Primary action | Top left |
 |---|---|---|---|
-| S1 | Language choice (first launch) | Tap a flag | none (root) |
+| S1 | Language choice (first launch, v0.2) | Tap a flag | none (root) |
+| S1a | Parent PIN set (first launch, v0.2) | Parent enters a PIN twice | Back arrow |
 | S2 | Profile create | Pick an avatar, then play arrow | Back arrow |
 | S3 | Meet Wobble intro | Tap the pawn the hand points at | House |
 | S4 | Profile picker | Tap your avatar | none (root) |
@@ -41,7 +44,7 @@ Global rules for every screen:
 | S10 | Lesson | Make the shown move | House |
 | S11 | Puzzles list | Tap the next unsolved puzzle | House |
 | S12 | Puzzle | Make the winning move | House |
-| S13 | Parent gate | Answer the task | Close cross |
+| S13 | Parent gate (PIN pad) | Enter the PIN | Close cross |
 | S14 | Parent settings | Change a setting | Close cross |
 | S14a | Delete or reset confirm (panel) | Hold to delete | Cancel button and close cross |
 
@@ -59,7 +62,16 @@ Global rules for every screen:
 
 - **Noor:** sees two bright pictures to tap. Either works; nothing breaks.
 - **Sam:** reads "Nederlands" and "English" under the flags.
-- **States:** default (flags gently bob one after the other every 8 seconds when idle); pressed (flag squashes 5 percent and a waving hand appears on it); after tap (screen slides left to S2).
+- **States:** default (flags gently bob one after the other every 8 seconds when idle); pressed (flag squashes 5 percent and a waving hand appears on it); after tap (screen slides left to S1a).
+
+## S1a Parent PIN set (first launch)
+
+**Purpose:** the parent chooses the 4 digit PIN that guards settings (PRD 7.9, AC-27).
+**Primary action:** enter a PIN, then enter it again to confirm.
+
+Same grown up grey and white style as S13: short text for the parent ("Parent: choose a 4 digit PIN"), four dot sockets, numeric keypad with 80 × 80 pt keys. If the second entry differs, the dots shake and the parent starts again. After confirming, the screen slides on to S2. There is no skip: the PIN is required, and the parent is expected to be present on first launch. A small note explains that "forgot PIN" on the gate asks a multiplication question.
+
+- **Noor and Sam:** not for them; the grey look says "grown up screen".
 
 ## S2 Profile create
 
@@ -161,8 +173,8 @@ Creature card content (AC-17): creature picture in its idle loop, name, strength
 | taken  |        640 x 640 pt           |                 |
 | pieces |      (80 pt squares)          | creature's taken|
 |        |                               | pieces          |
-| [PIP]  |                               |                 |
-| coach  |                               |                 |
+|        |                               | [lightbulb]     |
+|        |                               |                 |
 | [OOPS] |                               |                 |
 | (o)(o) |                               |                 |
 +--------+-------------------------------+-----------------+
@@ -171,13 +183,13 @@ Creature card content (AC-17): creature picture in its idle loop, name, strength
 
 | Region | Content |
 |---|---|
-| Child side (left, 160 pt) | House (top), the child's avatar with the pieces the child has captured below it, Pip the coach (75 pt), oops button (90 pt) with two token sockets next to it (bottom, raised at least 40 pt above the bottom safe edge so the resting left thumb does not hit it) |
-| Board (centre) | Square, as large as fits: height minus 2 × 24 pt. Child's pieces at the bottom. No coordinates by default (see open question D6). |
-| Creature side (right, 200 pt) | Speech bubble on top (max 190 pt wide, tail points down at the creature), creature (180 × 200 pt) with its emotion animations, the pieces the creature has captured below |
+| Child side (left, 160 pt) | House (top), the child's avatar with the pieces the child has captured below it, oops button (90 pt) with two token sockets next to it (bottom, raised at least 40 pt above the bottom safe edge so the resting left thumb does not hit it). A gold turn ring glows around the avatar while it is the child's turn |
+| Board (centre) | Square, as large as fits: height minus 2 × 24 pt. The child always plays the light pieces at the bottom (AC-44). No coordinates by default (see open question D6). |
+| Creature side (right, 200 pt) | Speech bubble on top (max 190 pt wide, tail points down at the creature), creature (180 × 200 pt) with its emotion animations and a gold turn ring under it while it is the creature's turn, the lightbulb replay badge after a coach tip (v1.0), the pieces the creature has captured below |
 
 The layout puts "your things" on your side and "the creature's things" on its side. Speech bubbles never overlap the board.
 
-### Portrait layout (reference 768 × 950)
+### Portrait layout (reference 768 × 950, from v0.2)
 
 ```
 +----------------------------------------------+
@@ -190,7 +202,7 @@ The layout puts "your things" on your side and "the creature's things" on its si
 |           (80 to 88 pt squares)              |
 |                                              |
 +----------------------------------------------+
-| avatar + your taken | [PIP] | [OOPS] (o)(o)  |  bottom band 110 pt
+| avatar + your taken        | [OOPS] (o)(o)   |  bottom band 110 pt
 +----------------------------------------------+
 ```
 
@@ -198,17 +210,20 @@ The layout puts "your things" on your side and "the creature's things" on its si
 |---|---|
 | Top band | House (top left), creature (130 pt tall) left of centre, speech bubble to the right of the creature with its tail pointing left, the creature's captured pieces in a small row under the bubble |
 | Board | Width minus 2 × 32 pt, capped by available height |
-| Bottom band | Child's avatar with captured pieces (left), Pip (centre), oops button and tokens (right, inset 40 pt from the right edge) |
+| Bottom band | Child's avatar with captured pieces and its turn ring (left), oops button and tokens (right, inset 40 pt from the right edge) |
 
-If the height is tight, the board shrinks first down to 72 pt squares, then the bands shrink. Squares never go below 60 pt on any supported device (well above AC-11's 44 pt).
+If the height is tight, the board shrinks first down to 72 pt squares, then the bands shrink. Squares never go below 60 pt on any supported device (AC-11).
 
-### Coach tip placement
+### Coach tip placement (v1.0)
 
-- **Landscape:** the tip card grows out of Pip upward into the child side column (tall card, 150 × 330 pt). It holds a picture icon, a small animated diagram, and one short sentence for readers. The real teaching happens on the board itself: ghost arrows and a ghost piece replay the threat or the good move on the board squares, semi transparent, looping twice.
-- **Portrait:** the tip card slides over the top band (380 × 140 pt), Pip flies up into it, and the creature scoots to the left edge and shrinks to a head while the tip is open. The board ghost arrows work the same.
-- The tip closes on one tap anywhere on the card, or automatically when the child makes the next move. It never blocks the board.
+Coach tips come from the opponent creature itself (PRD 7.6, open question Q6), in its teaching pose.
+
+- **On the board (the real teaching):** ghost arrows and a ghost piece replay the threat or the good move on the board squares, semi transparent, looping twice. This works without reading.
+- **Landscape:** the creature switches to its teaching pose (side on, glasses, star pointer aimed at the board) and a tip card grows out of the creature side column (190 × 300 pt, below the creature, never over the board). The card holds the lightbulb icon, a small animated diagram, and one short sentence for readers.
+- **Portrait:** the tip card slides down from the top band (380 × 140 pt) beside the creature in its teaching pose. The board ghost arrows work the same.
+- The tip closes on one tap anywhere on the card, or automatically when the child makes the next move. It never blocks the board. After it closes, a small lightbulb badge stays beside the creature until the child's next move; tapping it replays the tip.
+- At most one tip in any 3 child moves (AC-30). A tip starts only after the half move's emotion has finished; while it is open, no emotion plays (AC-62). Oops closes an open tip (AC-66).
 - If the tip is about a blunder and an oops token is left, the card shows an arrow that points at the oops button, and the button glows once.
-- See open questions Q5 and Q6 for when tips appear and who gives them.
 
 ### Board states
 
@@ -221,9 +236,12 @@ If the height is tight, the board shrinks first down to 72 pt squares, then the 
 | | No legal moves | Tapping it makes it shake its head (small left right wiggle), no dots |
 | Legal move square | Empty target | Blue dot with white halo |
 | | Capture target | Orange corner brackets with navy outline around the enemy piece |
-| Last move | From and to squares | Soft yellow tint plus small corner ticks, for both players |
-| King | In check | Red starburst behind it, king shakes twice |
+| Last move | From and to squares | Soft yellow tint plus small corner ticks, for both players. The creature's from and to squares stay marked until the child completes their next move (AC-47) |
+| Creature's move | Piece travelling | Glows on pickup, slides over at least 400 ms (knight in an arc) so the child can follow it (AC-46) |
+| Captured child piece | Taken | Bursts into a small puff of blocks ("poof", about 400 ms), then its small copy drops into the creature's tray (AC-48) |
+| King (either side) | In check | Red starburst behind it, king shakes twice; applies to the creature's king too (AC-12) |
 | Board | Creature's turn | Child's pieces can still be tapped to look at moves (dots show in grey), but no move is made. See open question D5. |
+| | Held checkmate (AC-64) | Board stays bright, final position shown, no piece input; oops button glows slowly, a green "see result" button with a tipped over king icon appears on the child side (open question D19) |
 | | Game over | Board dims 20 percent, no input |
 
 ### Controls states
@@ -231,12 +249,13 @@ If the height is tight, the board shrinks first down to 72 pt squares, then the 
 | Element | Default | Pressed | Disabled | Other |
 |---|---|---|---|---|
 | House | White round button, navy house | Squash | never | Tap saves and goes Home instantly |
-| Oops button | Bright blue round button with a curved back arrow | Squash, token flies and pops | Grey, no glow. With zero tokens: dashed outline and empty sockets | Disabled while the creature thinks or before the first move |
+| Oops button | Bright blue round button with a curved back arrow | Squash, token flies and pops | Grey, no glow. With zero tokens: dashed outline and empty sockets | Disabled only before the first move or with zero tokens. Active while the creature thinks (cancels its move, AC-65) and during a held checkmate (AC-64) |
 | Oops tokens | Two filled gold coins with the back arrow | n/a | Empty socket outline once used | Shrug wiggle when the disabled button is tapped |
-| Pip coach | Small owl sitting | Hops, replays last tip | Asleep (closed eyes, "zzz" bubble) when coach tips are off | Glows and waves when a new tip is ready (see Q5) |
-| Creature | Idle loop | Tapping the creature makes it do a short personality giggle (decorative, never blocks) | n/a | Emotions per creatures.md |
+| Turn ring | Gold ring glowing around the avatar (child's turn) or under the creature (creature's turn) | n/a | n/a | Switches within 200 ms of each move; always visible during a game (AC-49) |
+| Lightbulb badge (v1.0) | Small lightbulb beside the creature after a tip | Replays the last tip | Hidden when no tip was shown since the child's last move | 75 pt hit area |
+| Creature | Idle loop | Tapping the creature makes it do a short personality giggle (decorative, never blocks) | n/a | Emotions per creatures.md; teaching pose during a tip |
 
-- **Noor:** sees her pieces, taps one, sees dots, taps a dot. Watches the creature's face to know how she is doing. Uses oops when Pip points to it.
+- **Noor:** sees her pieces, taps one, sees dots, taps a dot. Follows the turn ring and watches the creature's face to know how she is doing. Uses oops when the tip card points to it.
 - **Sam:** also reads coach tip sentences, watches captured piece trays, decides when to spend oops.
 
 ## S7a Promotion picker (overlay)
@@ -252,13 +271,13 @@ A dimmed board with a card anchored above the promoting pawn: four piece buttons
 
 | Result | Creature | Child side | Primary action | Secondary |
 |---|---|---|---|---|
-| Child wins | Sad, then Good sport (bows, holds out a medal) | Big celebration: child's avatar jumps on a block podium, falling blocky confetti, gold medal lands on the avatar | **Next creature** (green play arrow with the next creature's face on it), only if unlocked | Rematch (circular arrow with the same creature's face), smaller |
+| Child wins (checkmate or the creature resigns) | Sad (big resign Sad after a resignation), then Good sport (bows, holds out a medal) | Big celebration: child's avatar jumps on a block podium, falling blocky confetti, gold medal lands on the avatar | **Next creature** (green play arrow with the next creature's face on it), only if unlocked | Rematch (circular arrow with the same creature's face), smaller |
 | Child loses | Celebrating (short, 2 seconds), then Good sport (thumbs up, "Play again?") | Avatar gets a friendly pat, no sad effects on the child | **Rematch** | none |
 | Draw | Good sport, handshake with the child's avatar | Handshake animation, a small silver medal for both | **Rematch** | Next creature if already unlocked |
 
 Layout, landscape: creature on the right, child's avatar on the left, the podium or handshake in the middle, action buttons under them (primary 160 × 120 pt, secondary 110 × 90 pt, 40 pt apart). Portrait: creature and avatar side by side on top, buttons below. House top left always.
 
-Draw pictograms (AC-06), shown in the middle with one sentence for readers:
+Draw pictograms (AC-06, AC-56), shown in the middle with one sentence for readers. The picture alone must explain the draw to a non reader:
 
 | Draw type | Picture |
 |---|---|
@@ -266,6 +285,8 @@ Draw pictograms (AC-06), shown in the middle with one sentence for readers:
 | Threefold repetition | Same mini board three times with a circular arrow |
 | 50 move rule | A long line of footprints that fades out |
 | Insufficient material | Two lone kings shaking hands |
+
+Resignation (child wins) shows the creature's king lying down next to a small white flag.
 
 - **Noor:** reads the result from faces and the medal: podium means "I won".
 - **Sam:** reads the sentence and the next creature's name.
@@ -284,7 +305,7 @@ Nine cards, 150 × 170 pt, in a 5 + 4 grid (landscape) or 3 × 3 grid (portrait)
 
 **Purpose:** learn one piece or idea by doing.
 **Primary action:** make the move the hand points at.
-Board with only the needed pieces, Pip in the child side region (same position as S7), a 3 step progress row of star sockets in place of the creature panel. Pip demonstrates with a ghost move twice, then the pointing hand waits on the child's piece. Short sentence under Pip for readers.
+Board with only the needed pieces, the teaching creature (Wobble in its teaching pose, open question D10) in the creature panel with a 3 step progress row of star sockets under it. The teacher demonstrates with a ghost move twice, then the pointing hand waits on the child's piece. Short sentence under the teacher for readers.
 
 ## S11 Puzzles list
 
@@ -296,21 +317,22 @@ Two shelves with a picture header each: mate in one (king with a tipped crown), 
 
 **Purpose:** find the one winning move.
 **Primary action:** make the move.
-S7 layout with the creature side replaced by the goal icon (large) and Pip. After a wrong move the piece slides back and Pip shows a circular try again arrow; after three wrong moves the correct piece glows (flows.md, Flow 4). After solving: star flies to the socket and a green play arrow goes to the next puzzle.
+S7 layout with the creature side showing the goal icon (large) and the teaching creature (open question D10). After a wrong move the piece slides back and the teacher shows a circular try again arrow; after three wrong moves the correct piece glows (flows.md, Flow 4). After solving: star flies to the socket and a green play arrow goes to the next puzzle.
 
-## S13 Parent gate
+## S13 Parent gate (PIN pad)
 
 **Purpose:** keep children out of settings (AC-27).
-**Primary action:** answer the task.
+**Primary action:** enter the 4 digit parent PIN.
 
 | Region | Both orientations |
 |---|---|
 | Top left | Grey close cross |
-| Centre | Task text in the active language, for example "Parent: what is 17 × 13?" |
-| Below | Numeric keypad, keys 80 × 80 pt, plus a clear key and an enter key |
+| Centre | Short text for the parent ("Parent PIN") and four dot sockets |
+| Below | Numeric keypad, keys 80 × 80 pt, plus a clear key; the PIN is checked on the fourth digit |
+| Bottom | Small text link "Forgot PIN?" (44 pt target) |
 
-- Task is regenerated on every opening and after each wrong answer. Two digit times two digit multiplication is the v1 default. A parent PIN is recommended instead (see open questions, D1).
-- Three wrong answers close the gate with a 60 second cooldown on the gear (flows.md, Flow 5).
+- A wrong PIN shakes the dots and clears them. Three wrong PINs in a row close the gate with a 60 second cooldown on the gear (flows.md, Flow 5).
+- **Forgot PIN** (AC-59): shows a two digit times two digit multiplication ("Parent: what is 17 × 13?"). A correct answer opens S1a to set a new PIN; wrong answers follow the same three strikes and 60 second cooldown.
 - Visual style is deliberately grown up: grey and white, no creatures, no bright colours, so it does not look like a game to a child.
 
 ## S14 Parent settings
@@ -318,7 +340,7 @@ S7 layout with the creature side replaced by the goal icon (large) and Pip. Afte
 **Purpose:** parent controls. Text is allowed here; the audience is an adult.
 **Primary action:** change a setting (each row acts on its own; there is no save button).
 
-Rows: Language (two flags as a segmented control), Coach tips during games (on/off switch), Unlock all creatures (per profile switch), Profiles (list with reset and delete per profile), Storage note ("Progress is saved only in this browser on this iPad. Clearing Safari website data removes all profiles."). Close cross top left. Closes itself after 2 minutes idle.
+Rows: Language (two flags as a segmented control), Coach tips during games (on/off switch, v1.0), Unlock all creatures (per profile switch, v1.0), Profiles (list with, per profile, games played and games won, reset and delete; v1.0), Change PIN, Export and import profiles (v1.0), Storage note (see copy deck). v0.2 shows only Language, Change PIN and the storage note. Close cross top left. Closes itself after 2 minutes idle.
 
 ## S14a Delete or reset confirm
 
@@ -352,8 +374,14 @@ Child facing labels are optional support for readers. Picture first, text second
 | unlock.new | S8a caption | New creature! | Nieuw wezen! |
 | puzzle.mate1 | S11 shelf label | Checkmate in one | Mat in één |
 | puzzle.winpiece | S11 shelf label | Win a piece | Win een stuk |
-| puzzle.retry | S12 under Pip | Try again! | Probeer nog eens! |
-| gate.prompt | S13 | Parent: what is {a} × {b}? | Ouder: hoeveel is {a} × {b}? |
+| puzzle.retry | S12 under the teacher | Try again! | Probeer nog eens! |
+| pin.set | S1a | Parent: choose a 4 digit PIN | Ouder: kies een pincode van 4 cijfers |
+| pin.confirm | S1a | Enter it again | Nog een keer invoeren |
+| gate.pin | S13 | Parent PIN | Pincode ouder |
+| gate.forgot | S13 | Forgot PIN? | Pincode vergeten? |
+| gate.prompt | S13 forgot PIN | Parent: what is {a} × {b}? | Ouder: hoeveel is {a} × {b}? |
+| result.resign | S8 sentence | The creature gave up. You win! | Het wezen geeft op. Jij wint! |
+| result.seeresult | S7 held checkmate, button label | See result | Uitslag bekijken |
 | settings.title | S14 | Parent settings | Instellingen voor ouders |
 | settings.language | S14 | Language | Taal |
 | settings.coach | S14 | Coach tips during games | Tips van de coach tijdens het spel |
@@ -363,9 +391,14 @@ Child facing labels are optional support for readers. Picture first, text second
 | settings.delete | S14 | Delete player | Speler verwijderen |
 | settings.hold | S14a | Hold to delete | Ingedrukt houden om te verwijderen |
 | settings.cancel | S14a | Cancel | Annuleren |
-| settings.storage | S14 | Progress is saved only in this browser on this iPad. Clearing Safari website data removes all players. | Voortgang staat alleen in deze browser op deze iPad. Als je de websitegegevens van Safari wist, zijn alle spelers weg. |
+| settings.played | S14 | Games played | Gespeeld |
+| settings.won | S14 | Games won | Gewonnen |
+| settings.pin | S14 | Change PIN | Pincode wijzigen |
+| settings.export | S14 | Export players | Spelers exporteren |
+| settings.import | S14 | Import players | Spelers importeren |
+| settings.storage | S14 | Always open Minechess from its home screen icon. Progress is saved only on this iPad. Clearing Safari website data removes all players. | Open Minechess altijd via het icoon op het beginscherm. Voortgang staat alleen op deze iPad. Als je de websitegegevens van Safari wist, zijn alle spelers weg. |
 
-Example coach tips (picture carries the meaning, sentence is for readers):
+Example coach tips, shown by the opponent creature in its teaching pose (picture carries the meaning, sentence is for readers):
 
 | Trigger | Board picture | English | Dutch |
 |---|---|---|---|
@@ -379,7 +412,7 @@ Example coach tips (picture carries the meaning, sentence is for readers):
 
 1. **No meaning depends on reading or sound.** Every state change has a shape or motion signal (see visual-language.md).
 2. **No meaning depends on colour.** Dots, brackets, starbursts and ticks differ in shape, not only colour.
-3. **Targets:** child controls 75 pt or larger, board squares 72 pt or larger on reference devices, parent controls 44 pt or larger.
+3. **Targets (AC-11):** child controls 75 pt or larger, board squares 60 pt or larger on the iPad mini (72 pt or larger where space allows), parent controls 44 pt or larger.
 4. **Screen reader labels** exist for every control (for a parent or a helper), in the active language. Pieces are announced as "white knight on g1" style labels.
 5. **Reduce motion:** when iPad Reduce Motion is on, bounces become fades, confetti becomes a static burst, and idle loops slow to one small movement every 5 seconds.
 6. **No flashing:** nothing flashes more than twice per second, and no full screen flashes.
