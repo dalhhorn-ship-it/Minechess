@@ -34,3 +34,7 @@ Stack: Vite + TypeScript, no UI framework, Vitest. Answers PRD Q7 and Q8:
 Layout: `src/engine` pure rules, `src/ai` creature move choice, `src/game` match state (oops, resign, emotions), `src/ui` screens.
 
 Commands: `npm run dev` (add `?fen=<FEN>` to start from a test position, dev only), `npm test`, `npm run build`, `npm run preview`.
+
+## Deploy (Cloudflare Pages)
+
+Build command `npm run build`, output directory `dist`, Node 22 (`.nvmrc`). `public/_headers` sets a strict Content Security Policy (only the site's own files, AC-37) and long caching for hashed assets. `wrangler.toml` allows `npx wrangler pages deploy` as an alternative to the Git integration.
