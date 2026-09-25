@@ -8,13 +8,15 @@ Project subagents live in `.claude/agents/`:
 
 | Agent | Role |
 |-------|------|
+| product-manager | Owns the PRD, user stories, and priorities |
+| designer | UX flows, creature characters and emotions, visual style |
 | architect | Plans features and structure (read only) |
 | game-logic | Rules engine: moves, captures, mines, win and loss |
 | ui | Board rendering, input, and game status display |
 | tester | Edge case tests and bug reproduction |
 | reviewer | Reviews diffs before commit (read only) |
 
-Typical flow: architect plans, game-logic and ui build, tester verifies, reviewer checks the diff.
+Typical flow: product-manager defines, designer shapes the experience, architect plans, game-logic and ui build, tester verifies, reviewer checks the diff.
 
 ## Conventions
 
