@@ -6,8 +6,10 @@ import { LessonView } from './ui/lessonView';
 import { HallView, type NewScore } from './ui/hallView';
 import { icon } from './ui/icons';
 import { installTextures } from './ui/pixel';
+import { installSoundUnlock } from './ui/sound';
 
 installTextures();
+installSoundUnlock();
 
 const app = document.getElementById('app')!;
 let game: GameView | null = null;

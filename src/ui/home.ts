@@ -3,6 +3,7 @@ import { CREATURES } from '../ai/creatures';
 import { creatureSvg } from './creatureArt';
 import { icon } from './icons';
 import { box, extrudedSvg } from './pixel';
+import { setSoundOn, soundOn } from './sound';
 
 const LETTERS: Record<string, string[]> = {
   M: ['x...x', 'xx.xx', 'x.x.x', 'x...x', 'x...x', 'x...x', 'x...x'],
@@ -35,6 +36,7 @@ export function homeScreen(play: (id: CreatureId) => void, learn: () => void, ha
   el.innerHTML = `
     <div class="sky"><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i></div>
     <button class="btn hall-btn" aria-label="Hall of Fame">${icon('trophy')}</button>
+    <button class="btn sound-btn" aria-label="Geluid">${icon(soundOn() ? 'speaker' : 'mute')}</button>
     <h1 class="title" aria-label="Minechess">${title('MINECHESS')}</h1>
     <div class="cards">
       ${CREATURES.map((c, i) => `
@@ -58,5 +60,10 @@ export function homeScreen(play: (id: CreatureId) => void, learn: () => void, ha
   );
   el.querySelector('.learn-card')!.addEventListener('click', learn);
   el.querySelector('.hall-btn')!.addEventListener('click', hall);
+  const soundBtn = el.querySelector('.sound-btn')!;
+  soundBtn.addEventListener('click', () => {
+    setSoundOn(!soundOn());
+    soundBtn.innerHTML = icon(soundOn() ? 'speaker' : 'mute');
+  });
   return el;
 }

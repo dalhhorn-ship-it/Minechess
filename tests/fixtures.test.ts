@@ -12,7 +12,7 @@ const STATUS: Record<string, string> = {
   ongoing: 'playing', checkmate: 'checkmate', stalemate: 'stalemate',
   draw_insufficient: 'material', draw_fifty: 'fifty', draw_threefold: 'repetition',
 };
-const EMOTION: Record<string, string> = { sad_short: 'sadShort', good_sport: 'goodSport', sad_resign: 'sadResign' };
+const EMOTION: Record<string, string> = { good_sport: 'goodSport', sad_resign: 'sadResign' };
 
 function perft(pos: Position, depth: number): number {
   const moves = legalMoves(pos);
@@ -72,7 +72,8 @@ describe('fixture emotions (AC-18)', () => {
       for (const mv of x.setupMoves ?? []) m.game.play(mv);
       const out = x.mover === 'child' ? m.playChild(x.move) : m.playCreature(x.move);
       expect(m.game.status()).toBe(STATUS[x.resultStatus]);
-      expect(displayEmotion(out.emotion)).toBe(EMOTION[x.expectedEmotionV01] ?? x.expectedEmotionV01);
+      // All emotions are drawn now, so the PRD table applies without the v0.1 stand in.
+      expect(displayEmotion(out.emotion)).toBe(EMOTION[x.expectedEmotionPrd] ?? x.expectedEmotionPrd);
     });
   }
 });

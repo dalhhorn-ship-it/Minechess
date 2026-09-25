@@ -3,10 +3,10 @@ import { PIECE_VALUE } from '../engine';
 
 export type Emotion =
   | 'idle' | 'thinking' | 'happy' | 'sad' | 'sadShort' | 'sadResign'
-  | 'celebrating' | 'goodSport' | 'worried' | 'surprised';
+  | 'celebrating' | 'goodSport' | 'worried' | 'surprised' | 'crying' | 'laughing';
 
-/** Emotions that are not drawn yet in v0.1 and their stand in (PRD 6.1). */
-const V01_FALLBACK: Partial<Record<Emotion, Emotion>> = { worried: 'sadShort', surprised: 'sadShort' };
+/** Chance that a creature cries instead of looking surprised or sad (owner: "make him cry sometimes"). */
+export const CRY_CHANCE = 0.4;
 
 /**
  * Exactly one emotion per half move, by the priority in PRD 6.1:
@@ -27,6 +27,19 @@ export function emotionFor(move: Move, mover: 'child' | 'creature', status: Game
   return givesCheck || move.captured ? 'happy' : 'idle';
 }
 
+/** Kept for callers from v0.1; all emotions are drawn now, so nothing is replaced. */
 export function displayEmotion(e: Emotion): Emotion {
-  return V01_FALLBACK[e] ?? e;
+  return e;
+}
+
+/**
+ * Adds variety on top of the PRD 6.1 table, still one emotion per half move:
+ * the creature laughs (at its own luck) when it takes a big piece, and sometimes
+ * cries when the child takes a big piece or when it loses the game.
+ */
+export function enrich(e: Emotion, move: Move, mover: 'child' | 'creature', rand: number): Emotion {
+  const big = move.captured ? PIECE_VALUE[move.captured] >= 5 : false;
+  if (mover === 'creature' && e === 'happy' && big) return 'laughing';
+  if (mover === 'child' && (e === 'surprised' || e === 'sad') && rand < CRY_CHANCE) return 'crying';
+  return e;
 }

@@ -52,7 +52,7 @@ Format: Given / When / Then. Version shows the first release that must pass it (
 |---|---|---|
 | AC-18 | Given a scripted test game that contains every event in the event table (PRD 6.1), including half moves that trigger more than one event, when each half move is played, then exactly one emotion plays for that half move and it is the one the table gives by priority, using the v0.1 fallback (short Sad) for Worried and Surprised until v0.2 | v0.1 |
 | AC-19 | Given an emotion is playing, when the child taps a piece, then the input works immediately (reactions never block play) | v0.1 |
-| AC-20 | Given any speech bubble, then it is 6 words or fewer, pairs its words with a picture icon that shows the meaning, exists in every supported language (Dutch in v0.1, Dutch and English from v0.2), and never insults the child | v0.1 |
+| AC-20 | Given any speech bubble, then it is about 12 words or fewer (owner decision round 4), pairs its words with a picture icon that shows the meaning, exists in every supported language (Dutch in v0.1, Dutch and English from v0.2), and never insults the child | v0.1 |
 | AC-21 | Given the child wins (by checkmate or resignation), then the creature shows Sad, the child gets a celebration, and Rematch, Next creature and Home are offered | v0.1 |
 | AC-22 | Given the child loses, then the creature celebrates briefly (2 seconds or less), then shows the Good sport pose with an encouraging line, and Rematch and Home are offered | v0.1 |
 | AC-56 | Given the game ends in a draw, then the creature shows the Good sport pose with the handshake icon, the result screen shows the picture for that draw type, and Rematch is the primary action | v0.1 |
@@ -103,7 +103,7 @@ Format: Given / When / Then. Version shows the first release that must pass it (
 
 | ID | Criterion | Version |
 |---|---|---|
-| AC-34 | Given any screen or game event, then the game plays no audio at all | v0.1 |
+| AC-34 | Given sound is on, then only the creature losing a piece and the creature crying make a sound; given sound is off (start screen button, remembered), the game makes no sound at all, and every meaning is still shown by pictures and animation (owner decision round 4) | v0.1 |
 | AC-35 | Given the game is added to the iPad home screen, then it launches full screen with its own icon | v0.2 |
 | AC-36 | Given the game has been loaded once, when the iPad is offline, then a game against any unlocked creature can be started and finished | v1.0 |
 | AC-37 | Given the game is running, then no network requests go to third parties, no ads appear, and no personal data leaves the device | v0.1 |

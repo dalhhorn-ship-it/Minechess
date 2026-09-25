@@ -3,7 +3,9 @@ import { legalMoves, moveToUci, toFen } from '../engine';
 import type { CreatureId } from '../ai/creatures';
 import { CREATURES, creatureById } from '../ai/creatures';
 import { Match, type Result } from '../game/match';
-import { displayEmotion, type Emotion } from '../game/emotions';
+import { displayEmotion, enrich, type Emotion } from '../game/emotions';
+import { play as playSound } from './sound';
+import { PIECE_VALUE } from '../engine';
 import { AiClient } from './aiClient';
 import { creatureSvg } from './creatureArt';
 import { icon } from './icons';
@@ -298,8 +300,9 @@ export class GameView {
     this.lastMove = outcome.move;
     this.childTurns++;
     this.render();
-    if (outcome.result) return this.endGame(outcome.result, outcome.emotion);
-    this.setEmotion(outcome.emotion);
+    if (outcome.move.captured) playSound(PIECE_VALUE[outcome.move.captured] >= 5 ? 'bigLoss' : 'lostPiece');
+    if (outcome.result) return this.endGame(outcome.result, outcome.emotion, outcome.move);
+    this.setEmotion(enrich(outcome.emotion, outcome.move, 'child', Math.random()));
     void this.creatureTurn();
   }
 
@@ -360,7 +363,7 @@ export class GameView {
       return;
     }
     if (outcome.result) return this.endGame(outcome.result, outcome.emotion);
-    this.setEmotion(outcome.emotion);
+    this.setEmotion(enrich(outcome.emotion, outcome.move, 'creature', Math.random()));
     this.startChildTurn();
   }
 
@@ -476,7 +479,7 @@ export class GameView {
     this.endGame(this.match.acceptLoss(), 'celebrating');
   }
 
-  private async endGame(result: Result, emotion: Emotion) {
+  private async endGame(result: Result, emotion: Emotion, move?: Move) {
     this.ended = true;
     this.thinking = false;
     this.token++;
@@ -484,7 +487,8 @@ export class GameView {
     clearTimeout(this.hopTimer);
     this.render();
     const token = this.token;
-    const first: Emotion = result.reason === 'resign' ? 'sadResign' : result.kind === 'draw' ? 'goodSport' : emotion;
+    let first: Emotion = result.reason === 'resign' ? 'sadResign' : result.kind === 'draw' ? 'goodSport' : emotion;
+    if (move && result.kind === 'win') first = enrich(first, move, 'child', Math.random());
     this.setEmotion(first, { persist: true, force: true, lineKey: result.kind === 'draw' ? 'draw' : undefined });
     await wait(result.reason === 'resign' ? 3000 : 2000);
     if (token !== this.token) return;
@@ -566,12 +570,18 @@ export class GameView {
       : e === 'sad' ? `<div class="raincloud">${icon('rain')}</div>`
       : e === 'sadResign' ? `<div class="white-flag">${icon('flag')}</div>`
       : e === 'celebrating' ? `<div class="sparkles">${icon('star')}${icon('star')}</div>`
+      : e === 'worried' ? `<div class="sweat">${icon('sweat')}</div>`
+      : e === 'surprised' ? `<div class="burst">${icon('burst')}</div>`
+      : e === 'crying' ? `<div class="tears"><i></i><i></i><i></i><i></i></div><div class="puddle"></div>`
+      : e === 'laughing' ? `<div class="haha"><b>HA</b><b>HA</b><b>HA</b></div>`
       : '';
+    if (e === 'crying') setTimeout(() => playSound('cry'), 250);
     const key: LineKey | null =
       opts.lineKey ?? (e === 'sadShort' || e === 'goodSport' ? null : e === 'idle' ? null : (e as LineKey));
-    if (key && opts.bubble !== false) this.showBubble(key, opts.force);
+    if (key && opts.bubble !== false) this.showBubble(key, opts.force || e === 'crying' || e === 'surprised');
     if (!opts.persist && e !== 'idle' && e !== 'thinking') {
-      this.emotionTimer = window.setTimeout(() => this.setEmotion('idle', { bubble: false }), e === 'sadShort' ? 1000 : EMOTION_MS);
+      const ms = e === 'sadShort' ? 1000 : e === 'crying' ? 2800 : EMOTION_MS;
+      this.emotionTimer = window.setTimeout(() => this.setEmotion('idle', { bubble: false }), ms);
     }
   }
 
@@ -585,7 +595,9 @@ export class GameView {
     b.classList.remove('hidden');
     b.animate([{ transform: 'scale(0.6)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 180 });
     clearTimeout(Number(b.dataset.timer));
-    if (!this.ended) b.dataset.timer = String(window.setTimeout(() => b.classList.add('hidden'), 2200));
+    const text = b.querySelector('.bubble-text')!.textContent ?? '';
+    const ms = Math.max(2600, text.split(' ').length * 450);
+    if (!this.ended) b.dataset.timer = String(window.setTimeout(() => b.classList.add('hidden'), ms));
   }
 }
 

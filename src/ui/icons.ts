@@ -115,6 +115,34 @@ const ICONS: Record<string, { rows: string[]; pal: Record<string, string> }> = {
     ],
     pal: { o: INK, r: '#c8553d', w: '#fffbf2' },
   },
+  sweat: {
+    rows: [
+      '....o.....', '...obo....', '...obo....', '..obbbo...', '..obwbo...',
+      '.obwbbbo..', '.obbbbbo..', '..obbbo...', '...ooo....', '..........',
+    ],
+    pal: { o: INK, b: '#4aa8ff', w: '#ffffff' },
+  },
+  burst: {
+    rows: [
+      'o...oo...o', '.o.oyyo.o.', '..oyyyyo..', '.oyyooyyo.', 'oyyyooyyyo',
+      'oyyyooyyyo', '.oyyyyyyo.', '..oyooyo..', '.o.oyyo.o.', 'o...oo...o',
+    ],
+    pal: { o: INK, y: '#ffd23f' },
+  },
+  speaker: {
+    rows: [
+      '.....o....', '....oo..o.', '...owo.o..', 'ooowwo..o.', 'owwwwo.o.o',
+      'owwwwo.o.o', 'ooowwo..o.', '...owo.o..', '....oo..o.', '.....o....',
+    ],
+    pal: { o: INK, w: '#ffffff' },
+  },
+  mute: {
+    rows: [
+      '.....o....', '....oo....', '...owo....', 'ooowwo.o.o', 'owwwwo..o.',
+      'owwwwo..o.', 'ooowwo.o.o', '...owo....', '....oo....', '.....o....',
+    ],
+    pal: { o: INK, w: '#ffffff' },
+  },
   lock: {
     rows: [
       '...oooo...', '..o....o..', '..o....o..', '.oooooooo.', '.oyyyyyyo.',

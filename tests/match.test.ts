@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Game, positionKey, parseFen, toFen } from '../src/engine';
 import { Match } from '../src/game/match';
-import { displayEmotion } from '../src/game/emotions';
+import { displayEmotion, enrich, CRY_CHANCE } from '../src/game/emotions';
 import { allowsStalemate, chooseMove, isKingApproach } from '../src/ai/choose';
 
 describe('rules and draws', () => {
@@ -172,9 +172,9 @@ describe('AC-18 one emotion per half move, by priority', () => {
     return displayEmotion(m.playChild(uci).emotion);
   };
   it('child moves', () => {
-    expect(emo('4k3/8/8/8/8/8/8/R3K3 w - - 0 1', 'a1a8', 'child')).toBe('sadShort'); // check: worried
-    expect(emo('4k3/8/8/8/r7/8/8/R3K3 w - - 0 1', 'a1a4', 'child')).toBe('sadShort'); // takes rook: surprised
-    expect(emo('4k3/8/8/8/n7/8/8/R3K3 w - - 0 1', 'a1a4', 'child')).toBe('sadShort'); // other capture: worried
+    expect(emo('4k3/8/8/8/8/8/8/R3K3 w - - 0 1', 'a1a8', 'child')).toBe('worried');
+    expect(emo('4k3/8/8/8/r7/8/8/R3K3 w - - 0 1', 'a1a4', 'child')).toBe('surprised');
+    expect(emo('4k3/8/8/8/n7/8/8/R3K3 w - - 0 1', 'a1a4', 'child')).toBe('worried');
     expect(emo('4k3/8/8/8/8/8/8/R3K3 w - - 0 1', 'a1a2', 'child')).toBe('idle');
     expect(emo('6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1', 'a1a8', 'child')).toBe('sad');
   });
@@ -190,3 +190,22 @@ function toUci(m: { from: number; to: number; promotion?: string }) {
   const n = (s: number) => 'abcdefgh'[s & 7] + ((s >> 3) + 1);
   return n(m.from) + n(m.to) + (m.promotion ?? '');
 }
+
+describe('extra emotions (owner: more emotions, cry sometimes)', () => {
+  const m = new Match('wobble', '4k3/8/8/8/r7/8/8/R3K3 w - - 0 1');
+  const bigCapture = m.playChild('a1a4');
+  it('the creature sometimes cries when it loses a big piece', () => {
+    expect(enrich('surprised', bigCapture.move, 'child', CRY_CHANCE - 0.01)).toBe('crying');
+    expect(enrich('surprised', bigCapture.move, 'child', CRY_CHANCE + 0.01)).toBe('surprised');
+  });
+  it('the creature sometimes cries when it loses the game', () => {
+    expect(enrich('sad', bigCapture.move, 'child', 0)).toBe('crying');
+    expect(enrich('sad', bigCapture.move, 'child', 0.99)).toBe('sad');
+  });
+  it('the creature laughs when it takes a big piece, never when the child moves', () => {
+    const c = new Match('wobble', 'r3k3/8/8/8/8/8/8/R3K3 b - - 0 1');
+    const out = c.playCreature('a8a1');
+    expect(enrich(out.emotion, out.move, 'creature', 0.5)).toBe('laughing');
+    expect(enrich('worried', bigCapture.move, 'child', 0)).toBe('worried');
+  });
+});
