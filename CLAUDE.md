@@ -35,6 +35,6 @@ Layout: `src/engine` pure rules, `src/ai` creature move choice, `src/game` match
 
 Commands: `npm run dev` (add `?fen=<FEN>` to start from a test position, dev only), `npm test`, `npm run build`, `npm run preview`.
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers static assets)
 
-Build command `npm run build`, output directory `dist`, Node 22 (`.nvmrc`). `public/_headers` sets a strict Content Security Policy (only the site's own files, AC-37) and long caching for hashed assets. `wrangler.toml` allows `npx wrangler pages deploy` as an alternative to the Git integration.
+Cloudflare builds from Git: build command `npm run build`, deploy command `npx wrangler deploy`, Node 22 (`.nvmrc`). `wrangler.toml` serves `dist` as static assets (no Worker script). `public/_headers` sets a strict Content Security Policy (only the site's own files, AC-37) and long caching for hashed assets. Check a config change locally with `npx wrangler deploy --dry-run`.
