@@ -22,6 +22,7 @@ Priority: **Must** (v1.0 cannot ship without it), **Should** (planned for v1.0, 
 | F16 | Sound effects | Move, capture, check and result sounds; mute option | Should | F02 |
 | F17 | Home screen install | Full screen launch from the iPad home screen with an app icon | Should | none |
 | F18 | Offline play | Playable without internet after first load | Should | F17 |
+| F23 | Oops credits | 2 per game; each takes back the child's last move and the creature's reply | Must | F01, F02 |
 | F19 | Mine chess variant | Hidden mines on the board (rules to be defined) | Nice (v2.0) | F01 designed for variants |
 | F20 | Two players, one iPad | Pass and play between two kids | Nice (v2.0) | F01, F02 |
 | F21 | Parent progress view | Simple stats per child: games, wins per creature, lessons done | Nice (v2.0) | F09 |

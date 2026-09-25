@@ -1,17 +1,17 @@
 # Minechess PRD
 
-Status: Draft v0.1 for owner review
+Status: Draft v0.2, owner answers from round 1 included
 Owner: product owner (parent)
 Date: 2026-09-25
 
 ## 1. Problem statement
 
-Kids aged 6 to 12 who want to learn chess run into two problems:
+Kids aged 5 to 12 who want to learn chess run into two problems:
 
 1. **Adult chess apps are dry and intimidating.** Kids see plain boards, ratings and harsh losses, with nothing that feels like a game made for them.
 2. **Playing a real person isn't always possible**, and a parent opponent is often too strong, too weak, or busy.
 
-Kids in this family already love blocky, Minecraft style worlds. Chess becomes something they choose to play when the opponent is a character they know and care about, one who laughs, panics and sulks as the game goes on.
+The two kids in this family (ages 5 and 9) already love blocky, Minecraft style worlds. Chess becomes something they choose to play when the opponent is a character they know and care about, one who laughs, panics and sulks as the game goes on.
 
 **Evidence:** owner observation within the family. This is a private family project, so there is no market validation and none is needed.
 
@@ -27,17 +27,17 @@ This is a family project, so the metrics are observed by the owner over the firs
 |---|---|---|---|
 | Kids choose to play | Games started per child per week, without being asked | 0 | 3 or more |
 | Kids learn the rules | Child finishes all piece lessons | 0 | Every child who plays |
-| Kids progress | Highest creature beaten per child | none | Level 4 or higher for kids 8+, Level 2 or higher for kids 6 to 7 |
+| Kids progress | Highest creature beaten per child | none | The 5 year old beats Level 2; the 9 year old beats Level 5 |
 | Losing feels OK | Games that end in a tantrum or quitting mid game (owner observed) | unknown | Rare, and falling over time |
 | The creatures matter | Child can name their favourite creature and why | n/a | Every child |
 
 ## 4. Personas
 
-**Noor, 6, first chess steps.** She is starting to read in Dutch. She knows the board has "a horse and a castle" but not how they move. She needs big targets, legal moves shown, and an opponent that makes funny mistakes so she wins sometimes.
+**Noor, 5, first chess steps (the family's youngest).** She can't read yet. She knows the board has "a horse and a castle" but not how they move. She needs big targets, legal moves shown, meaning carried by pictures and animation rather than words, and an opponent that makes funny mistakes so she wins often.
 
-**Sam, 9, knows the moves.** He can play a full game but blunders pieces. He wants to beat the strong creatures and show off. He needs coach tips that explain what went wrong and a clear ladder to climb.
+**Sam, 9, knows the moves (the family's oldest).** He can play a full game but blunders pieces. He wants to beat the strong creatures and show off. He needs coach tips that explain what went wrong and a clear ladder to climb.
 
-**Mila, 12, getting good.** She beats her parents sometimes. She wants a real challenge from the top creatures and puzzles that make her think. She'll get bored if everything feels babyish.
+**Mila, 12, getting good (growth persona: who the kids become).** She beats her parents sometimes. She wants a real challenge from the top creatures and puzzles that make her think. She'll get bored if everything feels babyish.
 
 **The parent.** Wants a safe, ad free game that teaches something real, with language and unlocks behind a gate the kids can't get past, and no accounts to manage.
 
@@ -56,7 +56,7 @@ Eight original creatures inspired by blocky mob style. They use no Minecraft nam
 | 7 | **Triple Shade** | three headed boss | Hard | Aggressive | Three heads, three attacks, loves to hunt the king |
 | 8 | **Deep Watcher** | deep dark guardian | Very hard | Patient, smart | Senses every move; calm, rarely blunders, final boss |
 
-**Assumption:** the four clumsy creatures sit below Copper Bot, so the youngest kids get wins early. The owner listed Copper Golem as "easy", so the question is flagged in section 11.
+**Decided:** the four clumsy creatures sit below Copper Bot, so the youngest kid gets wins early. Working names are approved.
 
 **Style definitions** (testable behaviour, not technology):
 
@@ -105,6 +105,7 @@ Rules:
 10. Resume an unfinished game after closing the browser.
 11. Works in iPad Safari in landscape and portrait, and can be added to the home screen.
 12. Sound effects for moves, captures and results, with mute.
+13. **Oops credits:** 2 per game. Using one takes back the child's last move and the creature's reply, so the child can try again.
 
 ### Out of scope (non goals)
 
@@ -114,7 +115,7 @@ Rules:
 4. Accounts, cloud sync, login, email.
 5. Ads, purchases, analytics or tracking of any kind.
 6. Chat or any free text written by children.
-7. Undo and "suggest a move" hints. The owner didn't pick them; coach tips cover learning. Open question in section 11.
+7. "Suggest a move" hints. Coach tips and oops credits cover learning. Unlimited undo is also out; see oops credits.
 8. Chess clocks and time pressure.
 9. Ratings or Elo shown to kids.
 10. Android, desktop optimisation and native App Store apps.
@@ -146,20 +147,20 @@ Every screen has a visible one tap way back or home, as the `ux-ipad-kids` rules
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Creature art volume is large | Delays v1.0 | Ship v0.1 with 3 creatures; design emotions as reusable face parts |
-| Weak creatures still too strong for 6 year olds | Kids quit | Tune Level 1 to 2 so a child who knows the moves wins most games; test with the youngest kid |
-| Strongest creature too weak for a 12 year old | Boredom | Deep Watcher tuned to beat a club beginner; confirm with the oldest kid |
+| Weak creatures still too strong for the 5 year old | Kid quits | Tune Level 1 to 2 so a child who knows the moves wins most games; test with the 5 year old |
+| 5 year old can't read speech bubbles, tips or lessons | Misses the fun and the teaching | Pictures and animation carry the meaning; see Q9 on read aloud |
+| Strongest creature too weak as the kids grow | Boredom | Deep Watcher tuned to beat a club beginner; recheck with the 9 year old over time |
 | Browser storage cleared | Progress lost | Warn in parent settings; export/import profile is a P2 idea |
 | Look-alikes drift too close to Minecraft | IP concern if ever shared | Designer checks every creature against the originality rule |
 
 ## 11. Open questions
 
+Answered in round 1: clumsy creatures sit below Copper Bot; names approved; 2 oops credits per game; players are 5 and 9.
+
 | # | Question | Who answers |
 |---|---|---|
-| Q1 | Are the 4 clumsy creatures below Copper Bot (easier), or somewhere else on the ladder? | Owner |
-| Q2 | Are the working names OK (Wobble, Clucky, Fizz, Muddle, Copper Bot, Iron Guardian, Triple Shade, Deep Watcher)? Do the kids want to name any? | Owner (with kids) |
-| Q3 | Should there be an undo ("oops button"), perhaps only against Levels 1 to 4 or for kids under 8? | Owner |
-| Q4 | How many kids and what ages will play? This sets the profile limit and tuning targets. | Owner |
 | Q5 | Should coach tips appear during the game automatically, or only when the child taps the coach? | Designer, then owner |
 | Q6 | Who gives coach tips: the opponent creature itself, or a separate friendly coach character? | Designer |
 | Q7 | Art approach: pixel/voxel style drawn in code, or illustrated assets? | Designer, then solution-architect |
 | Q8 | Which chess engine approach (own simple engine vs an existing open engine with strength limits)? | Solution-architect |
+| Q9 | The 5 year old can't read yet. Should speech bubbles, coach tips and lessons be read aloud (device text to speech or recorded lines), even though voice was left out? | Owner |

@@ -62,7 +62,7 @@ Format: Given / When / Then. Version shows the first release that must pass it.
 
 | ID | Criterion | Version |
 |---|---|---|
-| AC-27 | Given the settings button, when tapped, then a parent gate appears that needs a task a 6 to 9 year old can't reliably do, and settings open only after passing it | v1.0 |
+| AC-27 | Given the settings button, when tapped, then a parent gate appears that needs a task the 9 year old can't reliably do, and settings open only after passing it | v1.0 |
 | AC-28 | Given parent settings, then the parent can change language, unlock all creatures, switch coach tips and sound on or off, and delete a profile (with confirmation) | v1.0 |
 
 ## Resume (F12)
@@ -89,3 +89,13 @@ Format: Given / When / Then. Version shows the first release that must pass it.
 | AC-36 | Given the game has been loaded once, when the iPad is offline, then a game against any unlocked creature can be started and finished | v1.0 |
 | AC-37 | Given the game is running, then no network requests go to third parties, no ads appear, and no personal data leaves the device | v0.1 |
 | AC-38 | Given any screen, then there is a visible one tap route back or home | v0.1 |
+
+## Oops credits (F23)
+
+| ID | Criterion | Version |
+|---|---|---|
+| AC-39 | Given a new game, then the child has 2 oops credits, shown as 2 picture icons (no numbers needed) | v0.1 |
+| AC-40 | Given it is the child's turn and at least 1 credit is left, when the child taps oops, then the child's last move and the creature's reply are taken back, one credit is used, and the creature shows a playful reaction | v0.1 |
+| AC-41 | Given 0 credits are left or no move has been made yet, then the oops button is visibly disabled and does nothing | v0.1 |
+| AC-42 | Given a game ended in checkmate, stalemate or a draw, then oops can't undo the result | v0.1 |
+| AC-43 | Given a game is resumed after closing Safari, then the remaining oops credits are restored too | v0.1 |
