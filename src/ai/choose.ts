@@ -1,4 +1,4 @@
-import type { Move, Position, Square } from '../engine';
+import type { Color, Move, Position, Square } from '../engine';
 import {
   PIECE_VALUE, fileOf, inCheck, isAttacked, legalMoves, materialBalance, moveToUci, other,
   parseFen, positionKey, rankOf, standardRules,
@@ -21,6 +21,19 @@ export const HELP_THRESHOLD = 5;
 
 export function isClearlyLosing(pos: Position): boolean {
   return materialBalance(pos, pos.turn) <= -HELP_THRESHOLD;
+}
+
+/** Deficit that, together with having only king and pawns left, counts as hopeless. */
+export const HOPELESS_DEFICIT = 9;
+
+/**
+ * Hopeless: `color` has nothing left but its king and pawns, and is 9 or more points
+ * behind. Only then do the easy creatures walk their king out or resign, so they never
+ * give up just because they lost a few pieces (owner decision).
+ */
+export function isHopeless(pos: Position, color: Color = pos.turn): boolean {
+  const onlyKingAndPawns = pos.board.every((p) => !p || p.color !== color || p.type === 'k' || p.type === 'p');
+  return onlyKingAndPawns && materialBalance(pos, color) <= -HOPELESS_DEFICIT;
 }
 
 /** True when the opponent has a reply after `move` that leaves us stalemated. */
@@ -89,9 +102,13 @@ export function stalematesOpponent(pos: Position, move: Move): boolean {
 }
 
 function copperBot(pos: Position, moves: Move[], rng: Rng): Move {
-  // Curious: a real but shallow search, likes poking at child pieces, and makes clear mistakes.
+  // Curious: a shallow search (one move plus the obvious recapture), likes poking at child
+  // pieces, is often too distracted to notice a free piece, and makes clear mistakes.
+  // Tuned down after the owner found it too strong for the kids.
   const them = other(pos.turn);
-  const scored = scoreMoves(pos, 2).map(({ move, score }) => {
+  const distracted = rng() < 0.3;
+  const careful = rng() < 0.8;
+  const scored = scoreMoves(pos, 1, careful ? 1 : 0).map(({ move, score }) => {
     const after = standardRules.applyMove(pos, move);
     const target = after.board[move.to];
     let poke = 0;
@@ -99,15 +116,16 @@ function copperBot(pos: Position, moves: Move[], rng: Rng): Move {
       for (let sq = 0; sq < 64; sq++) {
         const p = after.board[sq];
         if (p?.color !== them || p.type === 'k') continue;
-        if (!isAttacked(pos, sq, pos.turn) && isAttacked(after, sq, pos.turn)) poke = 40;
+        if (!isAttacked(pos, sq, pos.turn) && isAttacked(after, sq, pos.turn)) poke = 150;
       }
     }
-    return { move, score: score + poke + rng() * 30 };
+    const missed = distracted && move.captured ? -PIECE_VALUE[move.captured] * 100 : 0;
+    return { move, score: score + poke + missed + rng() * 120 };
   });
   scored.sort((a, b) => b.score - a.score);
-  if (rng() < 0.2 && scored.length > 2) {
-    // A clear mistake: any of the top five that does not drop a lot of material outright.
-    const ok = scored.slice(0, 5).filter((s) => s.score > scored[0].score - 350);
+  if (rng() < 0.25 && scored.length > 2) {
+    // A clear mistake: any of the top six that does not drop a lot of material outright.
+    const ok = scored.slice(0, 6).filter((s) => s.score > scored[0].score - 400);
     return pick(ok, rng).move;
   }
   return scored[0].move;
@@ -126,6 +144,8 @@ export function chooseMove(req: ChooseRequest): Move {
   }
   if (info.helpsChildWin && isClearlyLosing(pos)) {
     moves = helpfulCandidates(pos, moves, req.history);
+  }
+  if (info.helpsChildWin && isHopeless(pos)) {
     const approach = moves.filter((m) => isKingApproach(pos, m));
     if (approach.length && rng() < 0.7) return pick(approach, rng);
   }

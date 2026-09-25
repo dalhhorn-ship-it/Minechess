@@ -38,14 +38,14 @@ function quiesce(pos: Position, alpha: number, beta: number, depth: number): num
   return alpha;
 }
 
-export function negamax(pos: Position, depth: number, alpha: number, beta: number, ply = 0): number {
+export function negamax(pos: Position, depth: number, alpha: number, beta: number, ply = 0, qdepth = 4): number {
   const moves = legalMoves(pos);
   if (!moves.length) return inCheck(pos) ? -MATE + ply : 0;
   if (pos.halfmove >= 100) return 0;
-  if (depth === 0) return quiesce(pos, alpha, beta, 4);
+  if (depth === 0) return quiesce(pos, alpha, beta, qdepth);
   let best = -Infinity;
   for (const m of orderMoves(moves)) {
-    const score = -negamax(standardRules.applyMove(pos, m), depth - 1, -beta, -alpha, ply + 1);
+    const score = -negamax(standardRules.applyMove(pos, m), depth - 1, -beta, -alpha, ply + 1, qdepth);
     if (score > best) best = score;
     if (score > alpha) alpha = score;
     if (alpha >= beta) break;
@@ -54,10 +54,10 @@ export function negamax(pos: Position, depth: number, alpha: number, beta: numbe
 }
 
 /** Scores every legal move for the side to move (higher is better for the mover). */
-export function scoreMoves(pos: Position, depth: number): { move: Move; score: number }[] {
+export function scoreMoves(pos: Position, depth: number, qdepth = 4): { move: Move; score: number }[] {
   return orderMoves(legalMoves(pos)).map((move) => ({
     move,
-    score: -negamax(standardRules.applyMove(pos, move), depth - 1, -Infinity, Infinity, 1),
+    score: -negamax(standardRules.applyMove(pos, move), depth - 1, -Infinity, Infinity, 1, qdepth),
   }));
 }
 

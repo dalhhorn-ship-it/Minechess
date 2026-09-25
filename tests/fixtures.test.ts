@@ -3,7 +3,7 @@ import fixtures from './fixtures/positions.json';
 import { Game, legalMoves, moveToUci, parseFen, positionKey, standardRules, toFen, type Position } from '../src/engine';
 import { Match } from '../src/game/match';
 import { displayEmotion } from '../src/game/emotions';
-import { chooseMove } from '../src/ai/choose';
+import { chooseMove, isHopeless } from '../src/ai/choose';
 import type { CreatureId } from '../src/ai/creatures';
 
 // Test cases written by the test lead (docs/test/test-cases-v0.1.md), all checked with an independent chess library.
@@ -126,6 +126,8 @@ describe('fixture easy creatures', () => {
     let total = 0;
     for (const k of fixtures.easyCreature.kingWalk as any[]) {
       const pos = parseFen(k.fen);
+      // The king walk only starts once the creature is hopeless (owner rule, AC-53).
+      if (!isHopeless(pos)) continue;
       const good: string[] = k.nearestChildPiece.excludingWhiteKing.closerKingMoves;
       if (!good.length) continue;
       for (const creature of levels) {

@@ -119,6 +119,17 @@ describe('easy creatures', () => {
     expect(m.shouldResign()).toBe(true);
   });
 
+  it('never gives up just because it lost a few pieces (owner rule)', () => {
+    // Clucky has lost her queen and more (down 12) but still has a rook and a knight.
+    const m = new Match('clucky', '4k3/8/7r/2n5/8/8/PPPPPPPP/RNBQKBNR w KQ - 0 1');
+    for (const mv of ['a2a3', 'b2b3', 'c2c3', 'd2d3']) {
+      m.playChild(mv);
+      expect(m.shouldResign()).toBe(false);
+      m.playCreature(toUci(chooseMove({ fen: toFen(m.game.position), history: [...m.game.history], creature: 'clucky', seed: 3 })));
+    }
+    expect(m.resignStreak).toBe(0);
+  });
+
   it('Copper Bot never resigns', () => {
     const m = new Match('copper', '4k3/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ - 0 1');
     for (const mv of ['a2a3', 'b2b3', 'c2c3']) {
@@ -140,8 +151,8 @@ describe('easy creatures', () => {
     }
   });
 
-  it('AC-53 a losing easy creature walks its king toward the child in at least half its moves', () => {
-    const fen = '8/8/8/8/3k4/8/8/R3K3 b - - 0 1';
+  it('AC-53 a hopeless easy creature walks its king toward the child in at least half its moves', () => {
+    const fen = '8/8/8/8/3k4/8/8/R3K2Q b - - 0 1';
     const pos = parseFen(fen);
     let approach = 0;
     for (let seed = 0; seed < 40; seed++) {
