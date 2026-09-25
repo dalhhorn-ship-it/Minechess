@@ -24,3 +24,13 @@ Status: product definition (PRD Draft v0.3). Runs in the iPad browser (Safari), 
 | Quality | test-lead, qa-specialist, tester, reviewer | Test strategy, test cases, review |
 
 Typical flow: product-manager, red-team, ux-ipad-kids and ux-designer, solution-architect, dev, test-lead, reviewer.
+
+## Build (v0.1)
+
+Stack: Vite + TypeScript, no UI framework, Vitest. Answers PRD Q7 and Q8:
+1. **Art (Q7):** pixel art drawn in code (`src/ui/pixel.ts`, `pieces.ts`, `icons.ts`, `creatureArt.ts`), with a blocky world look (plank panels, stone buttons, grass and dirt) as the owner asked. All textures are generated at runtime; no external assets, fonts or requests.
+2. **Engine (Q8):** own engine in `src/engine` (perft verified). Rules sit behind a `RuleSet` so mine chess can be added as a variant. Creature AI in `src/ai` runs in a Web Worker.
+
+Layout: `src/engine` pure rules, `src/ai` creature move choice, `src/game` match state (oops, resign, emotions), `src/ui` screens.
+
+Commands: `npm run dev` (add `?fen=<FEN>` to start from a test position, dev only), `npm test`, `npm run build`, `npm run preview`.
