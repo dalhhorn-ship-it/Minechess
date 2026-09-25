@@ -2,7 +2,7 @@
 
 An iPad chess game for kids aged 6 to 12. The child picks an opponent from a cast of original, blocky, Minecraft inspired creatures. Each creature has a play style (for example smart, not smart, aggressive, defensive) and shows emotions on screen that react to the game, including winning and losing.
 
-Status: product definition. No tech stack chosen yet. The PRD lives in `01-product/`.
+Status: product definition. Runs in the iPad browser (Safari), private family use, free, Dutch and English. Plain chess first; mine chess is a planned v2.0 variant, so the rules engine must support variants. The PRD lives in `01-product/`.
 
 ## Project context every agent must respect
 
