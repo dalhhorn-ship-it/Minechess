@@ -16,7 +16,7 @@
 
 **Goal:** every child has their own profile and a ladder to climb, and the game teaches.
 
-**Features:** all Must and Should features: F01 to F18 and F23, all 8 creatures.
+**Features:** all Must and Should features: F01 to F18 and F23 except F16 sound, all 8 creatures.
 
 **Definition of done:**
 1. All acceptance criteria for v0.1 and v1.0 pass.

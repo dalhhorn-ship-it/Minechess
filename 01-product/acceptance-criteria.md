@@ -40,7 +40,7 @@ Format: Given / When / Then. Version shows the first release that must pass it.
 |---|---|---|
 | AC-18 | Given each event in PRD section 6, when it happens, then the matching emotion animation and speech bubble play | v0.1 |
 | AC-19 | Given an emotion is playing, when the child taps a piece, then the input works immediately (reactions never block play) | v0.1 |
-| AC-20 | Given any speech bubble, then it is 6 words or fewer, exists in Dutch and English, and never insults the child | v0.1 |
+| AC-20 | Given any speech bubble, then it is 6 words or fewer, pairs its words with a picture icon that shows the meaning, exists in Dutch and English, and never insults the child | v0.1 |
 | AC-21 | Given the child wins, then the creature shows sad, the child gets a celebration, and Rematch, Next creature and Home are offered | v0.1 |
 | AC-22 | Given the child loses, then the creature celebrates briefly, then shows an encouraging good sport line and Rematch and Home are offered | v0.1 |
 
@@ -63,7 +63,7 @@ Format: Given / When / Then. Version shows the first release that must pass it.
 | ID | Criterion | Version |
 |---|---|---|
 | AC-27 | Given the settings button, when tapped, then a parent gate appears that needs a task the 9 year old can't reliably do, and settings open only after passing it | v1.0 |
-| AC-28 | Given parent settings, then the parent can change language, unlock all creatures, switch coach tips and sound on or off, and delete a profile (with confirmation) | v1.0 |
+| AC-28 | Given parent settings, then the parent can change language, unlock all creatures, switch coach tips on or off, and delete a profile (with confirmation) | v1.0 |
 
 ## Resume (F12)
 
@@ -80,11 +80,11 @@ Format: Given / When / Then. Version shows the first release that must pass it.
 | AC-32 | Given the puzzles menu, then at least 20 mate in one and 10 win a piece puzzles are available; solving one earns stars saved to the profile | v1.0 |
 | AC-33 | Given a wrong puzzle move, then the child sees a gentle "try again" and can retry without penalty | v1.0 |
 
-## Platform and safety (F16, F17, F18)
+## Platform and safety (F17, F18, no audio)
 
 | ID | Criterion | Version |
 |---|---|---|
-| AC-34 | Given sound is on, then moves, captures, check and results each have a distinct sound; muting silences all of them | v1.0 |
+| AC-34 | Given any screen or game event, then the game plays no audio at all | v0.1 |
 | AC-35 | Given the game is added to the iPad home screen, then it launches full screen with its own icon | v1.0 |
 | AC-36 | Given the game has been loaded once, when the iPad is offline, then a game against any unlocked creature can be started and finished | v1.0 |
 | AC-37 | Given the game is running, then no network requests go to third parties, no ads appear, and no personal data leaves the device | v0.1 |

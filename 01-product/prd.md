@@ -104,8 +104,7 @@ Rules:
 9. Parent gate for settings, language, unlock all, and resetting profiles.
 10. Resume an unfinished game after closing the browser.
 11. Works in iPad Safari in landscape and portrait, and can be added to the home screen.
-12. Sound effects for moves, captures and results, with mute.
-13. **Oops credits:** 2 per game. Using one takes back the child's last move and the creature's reply, so the child can try again.
+12. **Oops credits:** 2 per game. Using one takes back the child's last move and the creature's reply, so the child can try again.
 
 ### Out of scope (non goals)
 
@@ -119,7 +118,7 @@ Rules:
 8. Chess clocks and time pressure.
 9. Ratings or Elo shown to kids.
 10. Android, desktop optimisation and native App Store apps.
-11. Voice acting.
+11. **All audio for now (owner decision):** no voice, no read aloud, no sound effects. The game is fully silent in v1.0. Sound effects may return later.
 12. Any Minecraft name, texture, logo, sound or likeness.
 
 ## 8. Key user flows
@@ -148,14 +147,14 @@ Every screen has a visible one tap way back or home, as the `ux-ipad-kids` rules
 |---|---|---|
 | Creature art volume is large | Delays v1.0 | Ship v0.1 with 3 creatures; design emotions as reusable face parts |
 | Weak creatures still too strong for the 5 year old | Kid quits | Tune Level 1 to 2 so a child who knows the moves wins most games; test with the 5 year old |
-| 5 year old can't read speech bubbles, tips or lessons | Misses the fun and the teaching | Pictures and animation carry the meaning; see Q9 on read aloud |
+| 5 year old can't read speech bubbles, tips or lessons, and there's no audio | Misses the fun and the teaching | Every bubble pairs its words with a picture or emoji style icon; tips and lessons teach with pointing hands, arrows and animated demo moves; emotions carry the story. A parent or sibling can read along |
 | Strongest creature too weak as the kids grow | Boredom | Deep Watcher tuned to beat a club beginner; recheck with the 9 year old over time |
 | Browser storage cleared | Progress lost | Warn in parent settings; export/import profile is a P2 idea |
 | Look-alikes drift too close to Minecraft | IP concern if ever shared | Designer checks every creature against the originality rule |
 
 ## 11. Open questions
 
-Answered in round 1: clumsy creatures sit below Copper Bot; names approved; 2 oops credits per game; players are 5 and 9.
+Answered by the owner: clumsy creatures sit below Copper Bot; names approved; 2 oops credits per game; players are 5 and 9; no sound of any kind for now.
 
 | # | Question | Who answers |
 |---|---|---|
@@ -163,4 +162,3 @@ Answered in round 1: clumsy creatures sit below Copper Bot; names approved; 2 oo
 | Q6 | Who gives coach tips: the opponent creature itself, or a separate friendly coach character? | Designer |
 | Q7 | Art approach: pixel/voxel style drawn in code, or illustrated assets? | Designer, then solution-architect |
 | Q8 | Which chess engine approach (own simple engine vs an existing open engine with strength limits)? | Solution-architect |
-| Q9 | The 5 year old can't read yet. Should speech bubbles, coach tips and lessons be read aloud (device text to speech or recorded lines), even though voice was left out? | Owner |
