@@ -6,6 +6,7 @@
     "moves": "UCI long algebraic: from square, to square, optional promotion letter (q, r, b, n). Castling is the king moving two squares (e1g1, e1c1, e8g8, e8c8). En passant is the capturing pawn's move to the target square (e5d6).",
     "setupMoves": "When present, play these moves from fen first (all legal, none ends the game), then apply the case.",
     "status": "One of ongoing, checkmate, stalemate, draw_insufficient, draw_fifty, draw_threefold. Checkmate wins over any draw rule on the same move. draw_fifty means the halfmove clock reached 100 and the game ends automatically (AC-06). draw_threefold means the same position (pieces, side to move, castling rights, en passant rights) occurred for the third time and the game ends automatically.",
+    "resultFen": "FEN after the move. The en passant field is written after every two square pawn push (classic FEN). Engines that write it only when a capture is possible should compare the first three fields plus the side to move, or normalise the en passant field.",
     "pieceValues": {
       "p": 1,
       "n": 3,
@@ -2392,5 +2393,179 @@
     }
   ],
   "emotionEventsNotes": ["Exactly one emotion per half move (PRD 6.1). Priority: result, check, capture of 5 or more points, any other capture, none.", "v0.1 fallback: worried and surprised play sad_short.", "A result on the child's move: checkmate gives sad; any draw gives good_sport. On the creature's move: checkmate gives celebrating; any draw gives good_sport.", "Promotion and castling are not events by themselves; they count only through check or capture.", "Resignation is not a half move: the big sad_resign plays when Level 1 or 2 resigns before its move (see resign scenarios)."],
-  "resignNotes": ["downNineStreak counts consecutive creature moves after which the deficit is 9 or more; any creature move that leaves the deficit below 9 resets it to 0.", "Resignation happens before the creature's next move, that is right after the child's reply that follows the third qualifying creature move.", "Oops interplay (AC-66): if the child uses oops after the third qualifying creature move, the undone creature move is removed from the streak (streak goes back to 2)."]
+  "resignNotes": ["downNineStreak counts consecutive creature moves after which the deficit is 9 or more; any creature move that leaves the deficit below 9 resets it to 0.", "Resignation happens before the creature's next move, that is right after the child's reply that follows the third qualifying creature move.", "Oops interplay (AC-66): if the child uses oops after the third qualifying creature move, the undone creature move is removed from the streak (streak goes back to 2)."],
+  "manualIpad": [
+    {
+      "id": "MAN-01",
+      "description": "Forced creature capture (AC-48, AC-18 Happy): after the child plays h2h3, the creature's only legal move a7b6 captures the white bishop.",
+      "fen": "k7/p1K5/PB6/8/8/8/7P/8 w - - 0 1",
+      "childMoves": ["h2h3"],
+      "forcedCreatureReplies": ["a7b6"],
+      "finalStatus": "ongoing",
+      "testfenParam": "k7%2Fp1K5%2FPB6%2F8%2F8%2F8%2F7P%2F8%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-02",
+      "description": "Forced creature check (AC-12 child's king, AC-18 Happy): after h2h3 the creature's only legal move e4e3 gives check to the white king on f2.",
+      "fen": "k7/p7/P7/8/4p3/8/5K1P/1R6 w - - 0 1",
+      "childMoves": ["h2h3"],
+      "forcedCreatureReplies": ["e4e3"],
+      "finalStatus": "ongoing",
+      "testfenParam": "k7%2Fp7%2FP7%2F8%2F4p3%2F8%2F5K1P%2F1R6%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-03",
+      "description": "Forced creature knight move (AC-46 knight arc): after h2h3 the creature's only legal move is the knight h8g6.",
+      "fen": "k6n/p4p2/P4K2/8/8/8/7P/1R6 w - - 0 1",
+      "childMoves": ["h2h3"],
+      "forcedCreatureReplies": ["h8g6"],
+      "finalStatus": "ongoing",
+      "testfenParam": "k6n%2Fp4p2%2FP4K2%2F8%2F8%2F8%2F7P%2F1R6%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-04",
+      "description": "Forced creature checkmate (AC-64 held checkmate, AC-22, AC-42): after h2h3 the creature's only legal move a7a6 captures the rook and checkmates the white king on a1.",
+      "fen": "k7/r1P5/R1P5/8/8/8/1P5P/KR6 w - - 0 1",
+      "childMoves": ["h2h3"],
+      "forcedCreatureReplies": ["a7a6"],
+      "finalStatus": "checkmate",
+      "testfenParam": "k7%2Fr1P5%2FR1P5%2F8%2F8%2F8%2F1P5P%2FKR6%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-05",
+      "description": "Forced creature stalemate (AC-56, AC-05): the child's only legal move g6g7 gives check, the creature's only reply h8g8 leaves White with no legal move: stalemate.",
+      "fen": "7k/8/6PK/5q1P/8/8/8/8 w - - 0 1",
+      "childMoves": ["g6g7"],
+      "forcedCreatureReplies": ["h8g8"],
+      "finalStatus": "stalemate",
+      "testfenParam": "7k%2F8%2F6PK%2F5q1P%2F8%2F8%2F8%2F8%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-06",
+      "description": "Forced threefold repetition (AC-06, AC-56): the child moves the king g1h1, h1g1, g1h1, h1g1; the creature's only legal moves are a8b8, b8a8, a8b8, b8a8. The creature's 4th move repeats the start position a third time.",
+      "fen": "k7/p3N3/P2P4/8/8/8/8/6K1 w - - 0 1",
+      "childMoves": ["g1h1", "h1g1", "g1h1", "h1g1"],
+      "forcedCreatureReplies": ["a8b8", "b8a8", "a8b8", "b8a8"],
+      "finalStatus": "draw_threefold",
+      "testfenParam": "k7%2Fp3N3%2FP2P4%2F8%2F8%2F8%2F8%2F6K1%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-07",
+      "description": "Resignation (AC-54, AC-21): Wobble or Clucky is 11 points down. The child pushes the h pawn h2h3, h3h4, h4h5, h5h6. After the creature's third move and the child's fourth move, Wobble and Clucky resign; Copper Bot keeps playing.",
+      "fen": "k7/8/8/8/8/8/P6P/3QK3 w - - 0 1",
+      "childMoves": ["h2h3", "h3h4", "h4h5", "h5h6"],
+      "forcedCreatureReplies": null,
+      "finalStatus": "resign_levels_1_2",
+      "testfenParam": "k7%2F8%2F8%2F8%2F8%2F8%2FP6P%2F3QK3%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-08",
+      "description": "Child checkmates (AC-21, AC-05): the child plays a1a8, back rank mate.",
+      "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+      "childMoves": ["a1a8"],
+      "forcedCreatureReplies": [],
+      "finalStatus": "checkmate",
+      "testfenParam": "6k1%2F5ppp%2F8%2F8%2F8%2F8%2F8%2FR5K1%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-09",
+      "description": "Child stalemates (AC-05, AC-56): the child plays e7f7.",
+      "fen": "7k/4Q3/6K1/8/8/8/8/8 w - - 0 1",
+      "childMoves": ["e7f7"],
+      "forcedCreatureReplies": [],
+      "finalStatus": "stalemate",
+      "testfenParam": "7k%2F4Q3%2F6K1%2F8%2F8%2F8%2F8%2F8%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-10",
+      "description": "Insufficient material (AC-06): the child's king takes the last black pawn, e2d2.",
+      "fen": "8/8/8/8/3k4/8/3pK3/8 w - - 0 1",
+      "childMoves": ["e2d2"],
+      "forcedCreatureReplies": [],
+      "finalStatus": "draw_insufficient",
+      "testfenParam": "8%2F8%2F8%2F8%2F3k4%2F8%2F3pK3%2F8%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-11",
+      "description": "50 move rule (AC-06): halfmove clock is 99; the child plays the quiet rook move a1a2.",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 99 80",
+      "childMoves": ["a1a2"],
+      "forcedCreatureReplies": [],
+      "finalStatus": "draw_fifty",
+      "testfenParam": "4k3%2F8%2F8%2F8%2F8%2F8%2F8%2FR3K3%20w%20-%20-%2099%2080"
+    },
+    {
+      "id": "MAN-12",
+      "description": "Castling (AC-02): the child taps the king; dots on c1 and g1. Castle kingside with e1g1.",
+      "fen": "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1",
+      "childMoves": ["e1g1"],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "r3k2r%2Fpppppppp%2F8%2F8%2F8%2F8%2FPPPPPPPP%2FR3K2R%20w%20KQkq%20-%200%201"
+    },
+    {
+      "id": "MAN-13",
+      "description": "Castling through check refused (AC-02): black rook on f8 attacks f1; the king shows no dot on g1.",
+      "fen": "k4r2/8/8/8/8/8/P7/4K2R w K - 0 1",
+      "childMoves": [],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "k4r2%2F8%2F8%2F8%2F8%2F8%2FP7%2F4K2R%20w%20K%20-%200%201"
+    },
+    {
+      "id": "MAN-14",
+      "description": "En passant (AC-03): black just played d7d5; the e5 pawn can capture on d6.",
+      "fen": "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
+      "childMoves": ["e5d6"],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "rnbqkbnr%2F1pp1pppp%2Fp7%2F3pP3%2F8%2F8%2FPPPP1PPP%2FRNBQKBNR%20w%20KQkq%20d6%200%203"
+    },
+    {
+      "id": "MAN-15",
+      "description": "Promotion (AC-04): the child moves a7 to a8 and picks a piece.",
+      "fen": "8/P7/7k/7p/8/8/8/4K3 w - - 0 1",
+      "childMoves": ["a7a8q"],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "8%2FP7%2F7k%2F7p%2F8%2F8%2F8%2F4K3%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-16",
+      "description": "Child's king starts in check (AC-12, AC-01): only e1d2, e1f2 and f1e2 are allowed.",
+      "fen": "4r2k/8/8/8/8/8/8/3RKB2 w - - 0 1",
+      "childMoves": [],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "4r2k%2F8%2F8%2F8%2F8%2F8%2F8%2F3RKB2%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-17",
+      "description": "Pinned knight (AC-01): the knight on e2 has no legal move.",
+      "fen": "4r2k/8/8/8/8/8/4N3/4K3 w - - 0 1",
+      "childMoves": [],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "4r2k%2F8%2F8%2F8%2F8%2F8%2F4N3%2F4K3%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-18",
+      "description": "Child gives check to the creature's king (AC-12, AC-18 short Sad): the child plays a1a8.",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 0 1",
+      "childMoves": ["a1a8"],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "4k3%2F8%2F8%2F8%2F8%2F8%2F8%2FR3K3%20w%20-%20-%200%201"
+    },
+    {
+      "id": "MAN-19",
+      "description": "Child captures a rook (AC-18 short Sad): the child plays d1d5.",
+      "fen": "4k3/8/8/3r4/8/8/8/3QK3 w - - 0 1",
+      "childMoves": ["d1d5"],
+      "forcedCreatureReplies": null,
+      "finalStatus": "ongoing",
+      "testfenParam": "4k3%2F8%2F8%2F3r4%2F8%2F8%2F8%2F3QK3%20w%20-%20-%200%201"
+    }
+  ],
+  "manualIpadNotes": ["Used by the manual iPad cases through the test position loader (see docs/test/test-plan-v0.1.md, test hooks). forcedCreatureReplies lists the creature's only legal reply after each child move, so these cases do not depend on the AI. null means the creature's replies are free.", "MAN-07 was checked exhaustively: whatever the creature plays, after each of its first 3 moves it is still at least 9 points down and the game has not ended, so the child's 4 pawn pushes are always legal."]
 }
