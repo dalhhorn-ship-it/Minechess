@@ -8,7 +8,7 @@ Related: [test-cases-v0.1.md](test-cases-v0.1.md), [`tests/fixtures/positions.js
 
 ## 1. Purpose
 
-This plan answers one question for the owner: **can v0.1 ship to the family iPad?** v0.1 is done when all 40 acceptance criteria tagged v0.1 pass, the six items of the v0.1 definition of done hold, and both kids have played it (versions.md).
+This plan answers one question for the owner: **can v0.1 ship to the family iPad?** v0.1 is done when all 39 acceptance criteria tagged v0.1 pass, the six items of the v0.1 definition of done hold, and both kids have played it (versions.md).
 
 ## 2. Scope
 
@@ -60,14 +60,14 @@ All positions live in `tests/fixtures/positions.json`. The child always plays Wh
 
 | Section | Count | Used by |
 |---|---|---|
-| `perft` | 6 positions, 23 node counts (start position depth 1 to 4, Kiwipete depth 1 to 3, positions 3, 4, 4 mirrored and 5 from the Chess Programming Wiki) | TC-001 |
+| `perft` | 6 positions, 24 node counts (start position depth 1 to 4, Kiwipete depth 1 to 3, positions 3, 4, 4 mirrored and 5 from the Chess Programming Wiki) | TC-001 |
 | `rules` | 60 cases: 13 castling, 7 en passant, 9 promotion, 5 checkmate, 4 stalemate, 8 insufficient material, 6 fifty move, 5 repetition, 3 legal move lists | TC-002 to TC-018 |
 | `easyCreature.kingWalk` | 26 positions, Black down 5 or more points with legal king moves | TC-026 |
 | `easyCreature.stalemateTraps` | 8 trap positions plus 1 edge case where every move is a trap | TC-023, TC-024 |
 | `easyCreature.repetition` | 3 move sequences with the moves that would repeat a position | TC-025 |
 | `emotionEvents` | 31 single half moves with expected emotion (18 child, 13 creature, 11 with more than one event) | TC-031, TC-032 |
 | `resign` | 6 scenarios with a per move trace of the deficit and the down 9 streak | TC-027, TC-068 |
-| `manualIpad` | 19 positions for the iPad cases; 7 of them force the creature's reply so the case does not depend on the AI | Manual cases |
+| `manualIpad` | 19 positions for the iPad cases; 6 of them (MAN-01 to MAN-06) force every creature reply so the case does not depend on the AI | Manual cases |
 
 Every FEN was checked for legality and every expected value (legal move lists, statuses, perft counts, trap and repetition sets, emotion events, deficit traces) was computed and cross checked with an independent chess library (python-chess 1.10) and by reasoning. The generator is not part of the repository; the JSON is the source of truth.
 
@@ -125,29 +125,29 @@ Suspension: stop manual testing and send the build back when an S1 defect is fou
 | AC-02 | Castling | TC-005, TC-006, TC-007, TC-046 | automated unit, manual iPad |
 | AC-03 | En passant | TC-008, TC-009, TC-047 | automated unit, manual iPad |
 | AC-04 | Promotion picker | TC-010, TC-011, TC-048 | automated unit, manual iPad |
-| AC-05 | Checkmate and stalemate | TC-012, TC-013, TC-017, TC-049 | automated unit, manual iPad |
-| AC-06 | Draws and draw pictures | TC-014, TC-015, TC-016, TC-017, TC-041, TC-042, TC-043, TC-044 | automated unit, manual iPad, playtest |
+| AC-05 | Checkmate and stalemate | TC-012, TC-013, TC-015, TC-017, TC-037, TC-040, TC-049 | automated unit, manual iPad |
+| AC-06 | Draws and draw pictures | TC-011, TC-014, TC-015, TC-016, TC-017, TC-040, TC-041, TC-042, TC-043, TC-044 | automated unit, manual iPad, playtest |
 | AC-44 | Child plays light, bottom, first | TC-018, TC-050 | automated unit, manual iPad |
 | AC-07 | Legal move highlights | TC-051 | manual iPad |
 | AC-08 | Tap or drag to move | TC-052 | manual iPad |
 | AC-09 | Gentle deselect on illegal tap | TC-053 | manual iPad |
-| AC-11 | Touch target sizes | TC-054 | manual iPad |
-| AC-12 | Check highlight on both kings | TC-055 | manual iPad |
+| AC-11 | Touch target sizes | TC-048, TC-054 | manual iPad |
+| AC-12 | Check highlight on both kings | TC-002, TC-055 | manual iPad, automated unit |
 | AC-46 | Creature move slides 400 ms or more | TC-056 | manual iPad |
 | AC-47 | Creature from and to squares stay marked | TC-057 | manual iPad |
 | AC-48 | Capture poof and tray | TC-058 | manual iPad |
-| AC-49 | Turn indicator without text | TC-059 | manual iPad |
+| AC-49 | Turn indicator without text | TC-059, TC-075 | manual iPad, playtest |
 | AC-50 | No browser gestures | TC-060 | manual iPad |
-| AC-13 | Think time 0.8 to 3 s | TC-029, TC-061 | automated unit, manual iPad |
-| AC-14 | Test bot beats Level 1 and 2 | TC-019, TC-020, TC-021 | automated stats |
+| AC-13 | Think time 0.8 to 3 s | TC-029, TC-061, TC-073 | automated unit, manual iPad |
+| AC-14 | Test bot beats Level 1 and 2 | TC-019, TC-020, TC-021, TC-075, TC-076 | automated stats, playtest |
 | AC-51 | Easy creatures avoid stalemate traps | TC-023, TC-024 | automated stats |
 | AC-52 | Easy creatures avoid repeated positions | TC-025 | automated stats |
 | AC-53 | Easy creatures walk the king out | TC-026 | automated stats |
-| AC-54 | Easy creatures resign | TC-027, TC-028, TC-038 | automated unit, automated stats, manual iPad |
-| AC-18 | One emotion per half move by priority | TC-031, TC-032, TC-033 | automated unit, manual iPad |
+| AC-54 | Easy creatures resign | TC-027, TC-028, TC-038, TC-068 | automated unit, automated stats, manual iPad |
+| AC-18 | One emotion per half move by priority | TC-031, TC-032, TC-033, TC-075 | automated unit, manual iPad, playtest |
 | AC-19 | Reactions never block play | TC-034 | automated unit, manual iPad |
-| AC-20 | Speech bubbles | TC-035, TC-036 | automated unit, manual iPad |
-| AC-21 | Child wins | TC-037, TC-038 | manual iPad |
+| AC-20 | Speech bubbles | TC-035, TC-036, TC-077 | automated unit, manual iPad |
+| AC-21 | Child wins | TC-037, TC-038, TC-075 | manual iPad, playtest |
 | AC-22 | Child loses | TC-039 | manual iPad |
 | AC-56 | Draw result | TC-040, TC-041, TC-042, TC-043 | manual iPad |
 | AC-34 | No audio | TC-062 | manual iPad |
@@ -157,11 +157,11 @@ Suspension: stop manual testing and send the build back when an S1 defect is fou
 | AC-40 | Oops undoes one move pair | TC-067, TC-068 | manual iPad, automated unit |
 | AC-41 | Oops disabled at 0 credits or before a move | TC-069 | manual iPad, automated unit |
 | AC-42 | Results cannot be undone | TC-070 | manual iPad, automated unit |
-| AC-64 | Held checkmate | TC-071 | manual iPad |
+| AC-64 | Held checkmate | TC-039, TC-071 | manual iPad |
 | AC-65 | Oops while the creature thinks | TC-072, TC-073 | manual iPad, automated unit |
 | AC-66 | Oops restores the exact state | TC-068, TC-074 | automated unit, manual iPad |
 
-All 40 v0.1 acceptance criteria have at least one test case. Definition of done items without an AC are covered by TC-022 (three clearly different strengths), TC-075 and TC-076 (kids have played), TC-077 (all text Dutch), TC-078 (portrait picture) and TC-079 (creature picker).
+All 39 v0.1 acceptance criteria have at least one test case. Definition of done items without an AC are covered by TC-022 (three clearly different strengths), TC-075 and TC-076 (kids have played), TC-077 (all text Dutch), TC-078 (portrait picture) and TC-079 (creature picker).
 
 ## 11. Gaps, ambiguities and assumptions to confirm
 
