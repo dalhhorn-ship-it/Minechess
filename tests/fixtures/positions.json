@@ -1,0 +1,2396 @@
+{
+  "schemaVersion": 1,
+  "version": "v0.1",
+  "conventions": {
+    "fen": "Standard FEN, six fields. The child is always White (AC-44); the creature is always Black.",
+    "moves": "UCI long algebraic: from square, to square, optional promotion letter (q, r, b, n). Castling is the king moving two squares (e1g1, e1c1, e8g8, e8c8). En passant is the capturing pawn's move to the target square (e5d6).",
+    "setupMoves": "When present, play these moves from fen first (all legal, none ends the game), then apply the case.",
+    "status": "One of ongoing, checkmate, stalemate, draw_insufficient, draw_fifty, draw_threefold. Checkmate wins over any draw rule on the same move. draw_fifty means the halfmove clock reached 100 and the game ends automatically (AC-06). draw_threefold means the same position (pieces, side to move, castling rights, en passant rights) occurred for the third time and the game ends automatically.",
+    "pieceValues": {
+      "p": 1,
+      "n": 3,
+      "b": 3,
+      "r": 5,
+      "q": 9,
+      "k": 0
+    },
+    "deficit": "White material minus Black material using pieceValues (PRD 6.2). Positive means the creature is down.",
+    "emotions": "Emotion ids: idle, thinking, happy, sad_short (v0.1 stand in for worried and surprised, about 1 s, no raincloud, no bubble), sad (child wins), sad_resign (big Sad about 3 s), celebrating, good_sport, worried, surprised.",
+    "verification": "Every FEN was checked for legality and every expected value was computed and cross checked with an independent chess library (python-chess 1.10) as well as by hand reasoning."
+  },
+  "perft": [
+    {
+      "id": "PERFT-01",
+      "name": "Start position",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "nodes": {
+        "1": 20,
+        "2": 400,
+        "3": 8902,
+        "4": 197281
+      },
+      "source": "Chess Programming Wiki, Perft Results, initial position"
+    },
+    {
+      "id": "PERFT-02",
+      "name": "Kiwipete (position 2)",
+      "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+      "nodes": {
+        "1": 48,
+        "2": 2039,
+        "3": 97862
+      },
+      "source": "Chess Programming Wiki, Perft Results, position 2"
+    },
+    {
+      "id": "PERFT-03",
+      "name": "Position 3 (en passant and rook endgame)",
+      "fen": "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+      "nodes": {
+        "1": 14,
+        "2": 191,
+        "3": 2812,
+        "4": 43238,
+        "5": 674624
+      },
+      "source": "Chess Programming Wiki, Perft Results, position 3"
+    },
+    {
+      "id": "PERFT-04",
+      "name": "Position 4 (promotions, castling, White to move)",
+      "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+      "nodes": {
+        "1": 6,
+        "2": 264,
+        "3": 9467,
+        "4": 422333
+      },
+      "source": "Chess Programming Wiki, Perft Results, position 4"
+    },
+    {
+      "id": "PERFT-05",
+      "name": "Position 4 mirrored (Black to move)",
+      "fen": "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1",
+      "nodes": {
+        "1": 6,
+        "2": 264,
+        "3": 9467,
+        "4": 422333
+      },
+      "source": "Chess Programming Wiki, Perft Results, position 4 mirrored"
+    },
+    {
+      "id": "PERFT-06",
+      "name": "Position 5",
+      "fen": "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+      "nodes": {
+        "1": 44,
+        "2": 1486,
+        "3": 62379,
+        "4": 2103487
+      },
+      "source": "Chess Programming Wiki, Perft Results, position 5",
+      "note": "Depth 4 of PERFT-06 visits over 2 million nodes; tag it as a slow test if the unit suite must stay fast."
+    }
+  ],
+  "rules": [
+    {
+      "id": "CAS-01",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "White kingside castling allowed: king and h1 rook unmoved, f1 and g1 empty and not attacked.",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1c1", "e1d1", "e1d2", "e1e2", "e1f1", "e1f2", "e1g1"]
+        },
+        "legal": true,
+        "resultFen": "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "CAS-02",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "White queenside castling allowed; rook ends on d1.",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "move": "e1c1",
+      "expect": {
+        "legal": true,
+        "resultFen": "r3k2r/8/8/8/8/8/8/2KR3R b kq - 1 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "CAS-03",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Black kingside castling allowed (creature side).",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1",
+      "move": "e8g8",
+      "expect": {
+        "legal": true,
+        "resultFen": "r4rk1/8/8/8/8/8/8/R3K2R w KQ - 1 2",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "CAS-04",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Black queenside castling allowed (creature side).",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1",
+      "move": "e8c8",
+      "expect": {
+        "legal": true,
+        "resultFen": "2kr3r/8/8/8/8/8/8/R3K2R w KQ - 1 2",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "CAS-05",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: king would pass through check (black rook on f8 attacks f1).",
+      "fen": "k4r2/8/8/8/8/8/8/4K2R w K - 0 1",
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1d1", "e1d2", "e1e2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-06",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: king would land in check (black rook on g8 attacks g1).",
+      "fen": "k5r1/8/8/8/8/8/8/4K2R w K - 0 1",
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1d1", "e1d2", "e1e2", "e1f1", "e1f2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-07",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: king is in check (black rook on e8), castling out of check is not allowed.",
+      "fen": "k3r3/8/8/8/8/8/8/4K2R w K - 0 1",
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1d1", "e1d2", "e1f1", "e1f2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-08",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: a knight stands between king and rook on b1 (queenside); kingside stays legal.",
+      "fen": "4k3/8/8/8/8/8/8/RN2K2R w KQ - 0 1",
+      "move": "e1c1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1d1", "e1d2", "e1e2", "e1f1", "e1f2", "e1g1"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-09",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Legal edge: queenside castling is allowed although b1 is attacked, because the king does not cross b1.",
+      "fen": "1r2k3/8/8/8/8/8/8/R3K3 w Q - 0 1",
+      "move": "e1c1",
+      "expect": {
+        "legal": true,
+        "resultFen": "1r2k3/8/8/8/8/8/8/2KR4 b - - 1 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "CAS-10",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: the h1 rook moved away and back, so kingside castling rights are lost (queenside stays legal).",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "setupMoves": ["h1h2", "a8a7", "h2h1", "a7a8"],
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1c1", "e1d1", "e1d2", "e1e2", "e1f1", "e1f2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-11",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: the king moved away and back, so both castling rights are lost.",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "setupMoves": ["e1f1", "e8f8", "f1e1", "f8e8"],
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1d1", "e1d2", "e1e2", "e1f1", "e1f2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-12",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Illegal: the h1 rook was captured on h1 by a black bishop; later the other white rook moves to h1. The kingside right stays lost.",
+      "fen": "r3k2r/8/8/8/8/7R/6b1/R3K2R b KQkq - 0 1",
+      "setupMoves": ["g2h1", "h3h2", "h1e4", "h2h1", "a8b8"],
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1c1", "e1d1", "e1d2", "e1e2", "e1f1", "e1f2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "CAS-13",
+      "ac": ["AC-02"],
+      "category": "castling",
+      "description": "Castling rights field without K: kingside castling not offered even though the pieces stand on their home squares.",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w Qkq - 0 1",
+      "move": "e1g1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1c1", "e1d1", "e1d2", "e1e2", "e1f1", "e1f2"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "EP-01",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Legal: black just played d7d5 beside the white e5 pawn; e5d6 captures en passant and removes the d5 pawn.",
+      "fen": "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
+      "move": "e5d6",
+      "expect": {
+        "legalMovesFrom": {
+          "e5": ["e5d6", "e5e6"]
+        },
+        "legal": true,
+        "resultFen": "rnbqkbnr/1pp1pppp/p2P4/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "EP-02",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Legal via move sequence from the start: e2e4 a7a6 e4e5 d7d5, then e5d6.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["e2e4", "a7a6", "e4e5", "d7d5"],
+      "move": "e5d6",
+      "expect": {
+        "legalMovesFrom": {
+          "e5": ["e5d6", "e5e6"]
+        },
+        "legal": true,
+        "resultFen": "rnbqkbnr/1pp1pppp/p2P4/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "EP-03",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Illegal (expired): same as EP-02 but both sides made one other move after d7d5, so the en passant right is gone.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["e2e4", "a7a6", "e4e5", "d7d5", "h2h3", "h7h6"],
+      "move": "e5d6",
+      "expect": {
+        "legalMovesFrom": {
+          "e5": ["e5e6"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "EP-04",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Illegal (pinned along the rank): capturing en passant would remove both pawns from rank 5 and expose the white king on a5 to the rook on h5.",
+      "fen": "8/8/8/K2pP2r/8/8/8/4k3 w - d6 0 1",
+      "move": "e5d6",
+      "expect": {
+        "legalMovesFrom": {
+          "e5": ["e5e6"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "EP-05",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Illegal (pinned along the diagonal): the e5 pawn is pinned by the bishop on a1 against the king on g7.",
+      "fen": "4k3/6K1/8/3pP3/8/8/8/b7 w - d6 0 1",
+      "move": "e5d6",
+      "expect": {
+        "legalMovesFrom": {
+          "e5": []
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "EP-06",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Legal: Black captures en passant (creature side) and the capture also removes the pawn that was giving check.",
+      "fen": "8/8/8/2k5/3Pp3/8/8/4K3 b - d3 0 1",
+      "move": "e4d3",
+      "expect": {
+        "legal": true,
+        "resultFen": "8/8/8/2k5/8/3p4/8/4K3 w - - 0 2",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "EP-07",
+      "ac": ["AC-03"],
+      "category": "en_passant",
+      "description": "Illegal: a pawn that moved one square twice (not one two square move) gives no en passant right.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["e2e4", "d7d6", "e4e5", "d6d5"],
+      "move": "e5d6",
+      "expect": {
+        "legalMovesFrom": {
+          "e5": ["e5e6"]
+        },
+        "legal": false
+      }
+    },
+    {
+      "id": "PROMO-01",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "White pawn a7 promotes on a8 to queen.",
+      "fen": "8/P7/7k/7p/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8q",
+      "expect": {
+        "legal": true,
+        "resultFen": "Q7/8/7k/7p/8/8/8/4K3 b - - 0 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false,
+        "pieceOnTarget": "Q"
+      }
+    },
+    {
+      "id": "PROMO-02",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "White pawn a7 promotes on a8 to rook.",
+      "fen": "8/P7/7k/7p/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8r",
+      "expect": {
+        "legal": true,
+        "resultFen": "R7/8/7k/7p/8/8/8/4K3 b - - 0 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false,
+        "pieceOnTarget": "R"
+      }
+    },
+    {
+      "id": "PROMO-03",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "White pawn a7 promotes on a8 to bishop.",
+      "fen": "8/P7/7k/7p/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8b",
+      "expect": {
+        "legal": true,
+        "resultFen": "B7/8/7k/7p/8/8/8/4K3 b - - 0 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false,
+        "pieceOnTarget": "B"
+      }
+    },
+    {
+      "id": "PROMO-04",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "White pawn a7 promotes on a8 to knight.",
+      "fen": "8/P7/7k/7p/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8n",
+      "expect": {
+        "legal": true,
+        "resultFen": "N7/8/7k/7p/8/8/8/4K3 b - - 0 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false,
+        "pieceOnTarget": "N"
+      }
+    },
+    {
+      "id": "PROMO-05",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "Promotion with capture on b8 (a7b8q) is legal and gives check along rank 8.",
+      "fen": "1r2k3/P7/8/8/8/8/8/4K3 w - - 0 1",
+      "move": "a7b8q",
+      "expect": {
+        "legal": true,
+        "resultFen": "1Q2k3/8/8/8/8/8/8/4K3 b - - 0 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": true,
+        "pieceOnTarget": "Q"
+      }
+    },
+    {
+      "id": "PROMO-06",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "A pawn move to the last rank without a promotion piece is not a legal move (a7a8 must carry q, r, b or n).",
+      "fen": "8/P7/7k/8/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8",
+      "expect": {
+        "legal": false
+      }
+    },
+    {
+      "id": "PROMO-07",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "Knight underpromotion that gives check: the new knight on a8 attacks the king on c7.",
+      "fen": "8/P1k5/8/7p/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8n",
+      "expect": {
+        "legal": true,
+        "resultFen": "N7/2k5/8/7p/8/8/8/4K3 b - - 0 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": true,
+        "pieceOnTarget": "N"
+      }
+    },
+    {
+      "id": "PROMO-08",
+      "ac": ["AC-04"],
+      "category": "promotion",
+      "description": "Black pawn promotes on a1 (creature side).",
+      "fen": "4k3/8/8/8/8/8/p4K2/8 b - - 0 1",
+      "move": "a2a1q",
+      "expect": {
+        "legal": true,
+        "resultFen": "4k3/8/8/8/8/8/5K2/q7 w - - 0 2",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false,
+        "pieceOnTarget": "q"
+      }
+    },
+    {
+      "id": "PROMO-09",
+      "ac": ["AC-04", "AC-06"],
+      "category": "promotion",
+      "description": "Edge: underpromotion to a bishop leaves king and bishop against a lone king, so the game ends at once as a draw by insufficient material.",
+      "fen": "8/P7/7k/8/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8b",
+      "expect": {
+        "legal": true,
+        "resultFen": "B7/8/7k/8/8/8/8/4K3 b - - 0 1",
+        "status": "draw_insufficient",
+        "winner": null,
+        "inCheck": false,
+        "pieceOnTarget": "B"
+      }
+    },
+    {
+      "id": "MATE-01",
+      "ac": ["AC-05"],
+      "category": "checkmate",
+      "description": "Back rank mate by the child: a1a8.",
+      "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+      "move": "a1a8",
+      "expect": {
+        "legal": true,
+        "resultFen": "R5k1/5ppp/8/8/8/8/8/6K1 b - - 1 1",
+        "status": "checkmate",
+        "winner": "white",
+        "inCheck": true
+      }
+    },
+    {
+      "id": "MATE-02",
+      "ac": ["AC-05"],
+      "category": "checkmate",
+      "description": "Fool's mate by the creature from the start position: f2f3 e7e5 g2g4 then d8h4.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["f2f3", "e7e5", "g2g4"],
+      "move": "d8h4",
+      "expect": {
+        "legal": true,
+        "resultFen": "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+        "status": "checkmate",
+        "winner": "black",
+        "inCheck": true
+      }
+    },
+    {
+      "id": "MATE-03",
+      "ac": ["AC-05"],
+      "category": "checkmate",
+      "description": "Scholar's mate by the child: e2e4 e7e5 f1c4 b8c6 d1h5 g8f6 then h5f7.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["e2e4", "e7e5", "f1c4", "b8c6", "d1h5", "g8f6"],
+      "move": "h5f7",
+      "expect": {
+        "legal": true,
+        "resultFen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+        "status": "checkmate",
+        "winner": "white",
+        "inCheck": true
+      }
+    },
+    {
+      "id": "MATE-04",
+      "ac": ["AC-05"],
+      "category": "checkmate",
+      "description": "Static position: White (the child) is checkmated.",
+      "fen": "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+      "expect": {
+        "status": "checkmate",
+        "winner": "black",
+        "inCheck": true
+      }
+    },
+    {
+      "id": "MATE-05",
+      "ac": ["AC-05"],
+      "category": "check_not_mate",
+      "description": "Check that is not mate: the king can escape, so the game goes on.",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 0 1",
+      "move": "a1a8",
+      "expect": {
+        "legal": true,
+        "resultFen": "R3k3/8/8/8/8/8/8/4K3 b - - 1 1",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": true
+      }
+    },
+    {
+      "id": "STALE-01",
+      "ac": ["AC-05"],
+      "category": "stalemate",
+      "description": "The child's quiet queen move e7f7 leaves Black with no legal move and not in check: stalemate, draw.",
+      "fen": "7k/4Q3/6K1/8/8/8/8/8 w - - 0 1",
+      "move": "e7f7",
+      "expect": {
+        "legal": true,
+        "resultFen": "7k/5Q2/6K1/8/8/8/8/8 b - - 1 1",
+        "status": "stalemate",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "STALE-02",
+      "ac": ["AC-05"],
+      "category": "stalemate",
+      "description": "Static position: Black to move, not in check, no legal move.",
+      "fen": "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1",
+      "expect": {
+        "status": "stalemate",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "STALE-03",
+      "ac": ["AC-05"],
+      "category": "stalemate",
+      "description": "The creature's move c1c7 stalemates the child's king on a8.",
+      "fen": "K7/8/1k6/8/8/8/8/2q5 b - - 0 1",
+      "move": "c1c7",
+      "expect": {
+        "legal": true,
+        "resultFen": "K7/2q5/1k6/8/8/8/8/8 w - - 1 2",
+        "status": "stalemate",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "STALE-04",
+      "ac": ["AC-05"],
+      "category": "stalemate",
+      "description": "Static position: Black king h8, White pawn h7 protected by the king on g6 covers g8; g7 is covered by the king. Stalemate.",
+      "fen": "7k/7P/6K1/8/8/8/8/8 b - - 0 1",
+      "expect": {
+        "status": "stalemate",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-01",
+      "ac": ["AC-06"],
+      "category": "insufficient_material",
+      "description": "King versus king.",
+      "fen": "8/8/8/4k3/8/8/8/4K3 w - - 0 1",
+      "expect": {
+        "status": "draw_insufficient",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-02",
+      "ac": ["AC-06"],
+      "category": "insufficient_material",
+      "description": "King and bishop versus king.",
+      "fen": "8/8/8/4k3/8/8/8/2B1K3 w - - 0 1",
+      "expect": {
+        "status": "draw_insufficient",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-03",
+      "ac": ["AC-06"],
+      "category": "insufficient_material",
+      "description": "King and knight versus king.",
+      "fen": "8/8/8/4k3/8/8/8/1N2K3 w - - 0 1",
+      "expect": {
+        "status": "draw_insufficient",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-04",
+      "ac": ["AC-06"],
+      "category": "insufficient_material",
+      "description": "King and bishop versus king and bishop, both bishops on dark squares (c1 and f8).",
+      "fen": "5b2/8/8/4k3/8/8/8/2B1K3 w - - 0 1",
+      "expect": {
+        "status": "draw_insufficient",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-05",
+      "ac": ["AC-06"],
+      "category": "insufficient_material",
+      "description": "The child's king captures the last black pawn (e2d2), leaving king versus king: draw at once.",
+      "fen": "8/8/8/8/3k4/8/3pK3/8 w - - 0 1",
+      "move": "e2d2",
+      "expect": {
+        "legal": true,
+        "resultFen": "8/8/8/8/3k4/8/3K4/8 b - - 0 1",
+        "status": "draw_insufficient",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-06",
+      "ac": ["AC-06"],
+      "category": "not_insufficient",
+      "description": "Negative: bishops on opposite colours (c1 dark, c8 light) can still mate in theory, so the game goes on.",
+      "fen": "2b5/8/8/4k3/8/8/8/2B1K3 w - - 0 1",
+      "expect": {
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-07",
+      "ac": ["AC-06"],
+      "category": "not_insufficient",
+      "description": "Negative: king and rook versus king is not a draw.",
+      "fen": "8/8/8/4k3/8/8/8/R3K3 w - - 0 1",
+      "expect": {
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "INSUF-08",
+      "ac": ["AC-06"],
+      "category": "not_insufficient",
+      "description": "Negative: king and pawn versus king is not a draw.",
+      "fen": "8/8/8/4k3/8/8/4P3/4K3 w - - 0 1",
+      "expect": {
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "FIFTY-01",
+      "ac": ["AC-06"],
+      "category": "fifty_move",
+      "description": "Halfmove clock 99, the child makes a quiet rook move: clock reaches 100 and the game ends as a draw.",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 99 80",
+      "move": "a1a2",
+      "expect": {
+        "legal": true,
+        "resultFen": "4k3/8/8/8/8/8/R7/4K3 b - - 100 80",
+        "status": "draw_fifty",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "FIFTY-02",
+      "ac": ["AC-06"],
+      "category": "fifty_move",
+      "description": "Halfmove clock 99, the creature makes a quiet rook move: draw.",
+      "fen": "4k3/r7/8/8/8/8/8/4K3 b - - 99 80",
+      "move": "a7a6",
+      "expect": {
+        "legal": true,
+        "resultFen": "4k3/8/r7/8/8/8/8/4K3 w - - 100 81",
+        "status": "draw_fifty",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "FIFTY-03",
+      "ac": ["AC-06"],
+      "category": "fifty_move",
+      "description": "Negative: halfmove clock 99 and a pawn move resets the clock to 0; no draw.",
+      "fen": "4k3/8/8/8/8/8/4P3/R3K3 w - - 99 80",
+      "move": "e2e3",
+      "expect": {
+        "legal": true,
+        "resultFen": "4k3/8/8/8/8/4P3/8/R3K3 b - - 0 80",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "FIFTY-04",
+      "ac": ["AC-06"],
+      "category": "fifty_move",
+      "description": "Negative: halfmove clock 99 and a capture resets the clock to 0; no draw.",
+      "fen": "4k3/8/8/8/8/8/r7/R3K3 w - - 99 80",
+      "move": "a1a2",
+      "expect": {
+        "legal": true,
+        "resultFen": "4k3/8/8/8/8/8/R7/4K3 b - - 0 80",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "FIFTY-05",
+      "ac": ["AC-06", "AC-05"],
+      "category": "fifty_move",
+      "description": "Checkmate on the 100th half move wins over the 50 move rule.",
+      "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 99 80",
+      "move": "a1a8",
+      "expect": {
+        "legal": true,
+        "resultFen": "R5k1/5ppp/8/8/8/8/8/6K1 b - - 100 80",
+        "status": "checkmate",
+        "winner": "white",
+        "inCheck": true
+      }
+    },
+    {
+      "id": "FIFTY-06",
+      "ac": ["AC-06"],
+      "category": "fifty_move",
+      "description": "Negative: halfmove clock 98 and a quiet move: clock 99, game goes on.",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 98 80",
+      "move": "a1a2",
+      "expect": {
+        "legal": true,
+        "resultFen": "4k3/8/8/8/8/8/R7/4K3 b - - 99 80",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "REP-01",
+      "ac": ["AC-06"],
+      "category": "threefold",
+      "description": "Knights out and back twice from the start position: after the 8th half move (creature's f6g8) the start position stands for the third time: draw.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1"],
+      "move": "f6g8",
+      "expect": {
+        "legal": true,
+        "resultFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 8 5",
+        "status": "draw_threefold",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "REP-02",
+      "ac": ["AC-06"],
+      "category": "threefold",
+      "description": "Negative: after only 4 of the same half moves the start position has occurred twice; the game goes on.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["g1f3", "g8f6", "f3g1"],
+      "move": "f6g8",
+      "expect": {
+        "legal": true,
+        "resultFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 4 3",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "REP-03",
+      "ac": ["AC-06"],
+      "category": "threefold",
+      "description": "The child's move completes the threefold repetition (position after e2e4 occurs for the third time on the 9th half move).",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["e2e4", "g8f6", "g1f3", "f6g8", "f3g1", "g8f6", "g1f3", "f6g8"],
+      "move": "f3g1",
+      "expect": {
+        "legal": true,
+        "resultFen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 8 5",
+        "status": "draw_threefold",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "REP-04",
+      "ac": ["AC-06"],
+      "category": "threefold",
+      "description": "Negative: castling rights differ. Both kings step out and back twice. The board after half move 8 looks like the start of the case, but the start still had castling rights, so it counts as a different position; each position has occurred at most twice and the game goes on. An engine that ignores castling rights in its repetition key wrongly declares a draw here.",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "setupMoves": ["e1f1", "e8f8", "f1e1", "f8e8", "e1f1", "e8f8", "f1e1"],
+      "move": "f8e8",
+      "expect": {
+        "legal": true,
+        "resultFen": "r3k2r/8/8/8/8/8/8/R3K2R w - - 8 5",
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "REP-05",
+      "ac": ["AC-06"],
+      "category": "threefold",
+      "description": "Continuation of REP-04: e1f1 then e8f8 makes the position with the kings on f1 and f8 (White to move, no rights) occur for the third time, on half move 10: draw.",
+      "fen": "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+      "setupMoves": ["e1f1", "e8f8", "f1e1", "f8e8", "e1f1", "e8f8", "f1e1", "f8e8", "e1f1"],
+      "move": "e8f8",
+      "expect": {
+        "legal": true,
+        "resultFen": "r4k1r/8/8/8/8/8/8/R4K1R w - - 10 6",
+        "status": "draw_threefold",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "LEGAL-01",
+      "ac": ["AC-01", "AC-44"],
+      "category": "legal_moves",
+      "description": "Start position: White (the child) moves first and has exactly 20 legal moves; the knight on g1 has exactly f3 and h3.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "expect": {
+        "legalMovesFrom": {
+          "g1": ["g1f3", "g1h3"]
+        },
+        "allLegalMoves": ["a2a3", "a2a4", "b1a3", "b1c3", "b2b3", "b2b4", "c2c3", "c2c4", "d2d3", "d2d4", "e2e3", "e2e4", "f2f3", "f2f4", "g1f3", "g1h3", "g2g3", "g2g4", "h2h3", "h2h4"],
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "LEGAL-02",
+      "ac": ["AC-01"],
+      "category": "legal_moves",
+      "description": "Pinned piece: the knight on e2 is pinned by the rook on e8 against the king on e1 and has no legal move.",
+      "fen": "4r2k/8/8/8/8/8/4N3/4K3 w - - 0 1",
+      "expect": {
+        "legalMovesFrom": {
+          "e2": []
+        },
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": false
+      }
+    },
+    {
+      "id": "LEGAL-03",
+      "ac": ["AC-01", "AC-12"],
+      "category": "legal_moves",
+      "description": "In check from the rook on e8: the only legal moves are king steps off the e-file and the bishop block f1e2 (see allLegalMoves).",
+      "fen": "4r2k/8/8/8/8/8/8/3RKB2 w - - 0 1",
+      "expect": {
+        "legalMovesFrom": {
+          "e1": ["e1d2", "e1f2"]
+        },
+        "allLegalMoves": ["e1d2", "e1f2", "f1e2"],
+        "status": "ongoing",
+        "winner": null,
+        "inCheck": true
+      }
+    }
+  ],
+  "easyCreature": {
+    "notes": ["Applies to Level 1 (Wobble) and Level 2 (Clucky) only, and only while deficit is 5 or more (PRD section 5). Copper Bot (Level 5) is not bound by these rules.", "Nearest child piece distance [ASSUMPTION]: Chebyshev distance (king steps) from the black king to the closest White piece. The PRD does not say whether the White king counts as a 'child piece', so both variants are given; the AC-53 test must use the one the engine documents, and the product owner should confirm.", "A king move is 'closer' when the distance after the move is strictly smaller than before it."],
+    "kingWalk": [
+      {
+        "id": "EASY-KING-01",
+        "ac": ["AC-53"],
+        "fen": "8/8/4k3/8/8/2Q5/5PPP/6K1 b - - 0 1",
+        "deficit": 12,
+        "blackInCheck": false,
+        "legalKingMoves": ["e6d5", "e6d6", "e6d7", "e6e7", "e6f5", "e6f7"],
+        "legalMoveCount": 6,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["e6d5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["e6d5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 12 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-02",
+        "ac": ["AC-53"],
+        "fen": "8/5k2/8/8/8/1R6/5PPP/6K1 b - - 0 1",
+        "deficit": 8,
+        "blackInCheck": false,
+        "legalKingMoves": ["f7e6", "f7e7", "f7e8", "f7f6", "f7f8", "f7g6", "f7g7", "f7g8"],
+        "legalMoveCount": 8,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 4,
+            "closerKingMoves": ["f7e6"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 4,
+            "closerKingMoves": ["f7e6"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 8 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-03",
+        "ac": ["AC-53"],
+        "fen": "8/p5k1/8/8/3N4/8/1R3PPP/6K1 b - - 0 1",
+        "deficit": 10,
+        "blackInCheck": false,
+        "legalKingMoves": ["g7f6", "g7f7", "g7f8", "g7g6", "g7g8", "g7h6", "g7h7", "g7h8"],
+        "legalMoveCount": 10,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["g7f6"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["g7f6"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 10 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-04",
+        "ac": ["AC-53"],
+        "fen": "r7/8/3k4/8/8/2Q5/5PPP/1R4K1 b - - 0 1",
+        "deficit": 12,
+        "blackInCheck": false,
+        "legalKingMoves": ["d6d5", "d6d7", "d6e6", "d6e7"],
+        "legalMoveCount": 18,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["d6d5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["d6d5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 12 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-05",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/3k4/8/8/2B2PPP/R5K1 b - - 0 1",
+        "deficit": 11,
+        "blackInCheck": false,
+        "legalKingMoves": ["d5c4", "d5c5", "d5c6", "d5d4", "d5d6", "d5e5", "d5e6"],
+        "legalMoveCount": 7,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["d5c4", "d5d4"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["d5c4", "d5d4"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 11 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-06",
+        "ac": ["AC-53"],
+        "fen": "8/2k5/8/8/8/5Q2/PP4PP/6K1 b - - 0 1",
+        "deficit": 13,
+        "blackInCheck": false,
+        "legalKingMoves": ["c7b6", "c7b8", "c7c8", "c7d6", "c7d7", "c7d8"],
+        "legalMoveCount": 6,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 4,
+            "closerKingMoves": ["c7d6"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 4,
+            "closerKingMoves": ["c7d6"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 13 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-07",
+        "ac": ["AC-53"],
+        "fen": "8/8/1k6/p7/8/2N5/1P3PPP/4R1K1 b - - 0 1",
+        "deficit": 11,
+        "blackInCheck": false,
+        "legalKingMoves": ["b6a6", "b6a7", "b6b7", "b6c5", "b6c6", "b6c7"],
+        "legalMoveCount": 7,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["b6c5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["b6c5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 11 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-08",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/5k2/8/2R5/2P5/2K5 b - - 0 1",
+        "deficit": 6,
+        "blackInCheck": false,
+        "legalKingMoves": ["f5e4", "f5e5", "f5e6", "f5f4", "f5f6", "f5g4", "f5g5", "f5g6"],
+        "legalMoveCount": 8,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["f5e4", "f5e5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["f5e4", "f5e5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 6 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-09",
+        "ac": ["AC-53"],
+        "fen": "8/8/6k1/8/8/8/3R1R2/4K3 b - - 0 1",
+        "deficit": 10,
+        "blackInCheck": false,
+        "legalKingMoves": ["g6g5", "g6g7", "g6h5", "g6h6", "g6h7"],
+        "legalMoveCount": 5,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 4,
+            "closerKingMoves": ["g6g5", "g6h5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 4,
+            "closerKingMoves": ["g6g5", "g6h5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 10 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-10",
+        "ac": ["AC-53"],
+        "fen": "8/1p6/8/4k3/8/8/Q7/KQ6 b - - 0 1",
+        "deficit": 17,
+        "blackInCheck": false,
+        "legalKingMoves": ["e5d4", "e5d6", "e5f4", "e5f6"],
+        "legalMoveCount": 6,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 4,
+            "closerKingMoves": ["e5d4"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 4,
+            "closerKingMoves": ["e5d4"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 17 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-11",
+        "ac": ["AC-53"],
+        "fen": "7k/8/8/8/8/8/6Q1/6K1 b - - 0 1",
+        "deficit": 9,
+        "blackInCheck": false,
+        "legalKingMoves": ["h8h7"],
+        "legalMoveCount": 1,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 6,
+            "closerKingMoves": ["h8h7"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 6,
+            "closerKingMoves": ["h8h7"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 9 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-12",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/8/8/2k5/8/R3K2R b KQ - 0 1",
+        "deficit": 10,
+        "blackInCheck": false,
+        "legalKingMoves": ["c3b2", "c3b3", "c3b4", "c3c2", "c3c4", "c3d3", "c3d4"],
+        "legalMoveCount": 7,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 2,
+            "closerKingMoves": ["c3b2"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 2,
+            "closerKingMoves": ["c3b2"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 10 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-13",
+        "ac": ["AC-53"],
+        "fen": "8/pp6/8/8/8/k7/8/2R1K1R1 b - - 0 1",
+        "deficit": 8,
+        "blackInCheck": false,
+        "legalKingMoves": ["a3a2", "a3a4", "a3b2", "a3b3", "a3b4"],
+        "legalMoveCount": 9,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 2,
+            "closerKingMoves": ["a3b2"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 2,
+            "closerKingMoves": ["a3b2"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 8 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-14",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/2b5/8/4k3/8/1Q1R2K1 b - - 0 1",
+        "deficit": 11,
+        "blackInCheck": false,
+        "legalKingMoves": ["e3e2", "e3f3", "e3f4"],
+        "legalMoveCount": 11,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 2,
+            "closerKingMoves": ["e3e2"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 2,
+            "closerKingMoves": ["e3e2"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 11 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-15",
+        "ac": ["AC-53"],
+        "fen": "4k3/4p3/8/8/8/8/3QQ3/4K3 b - - 0 1",
+        "deficit": 17,
+        "blackInCheck": false,
+        "legalKingMoves": ["e8f7", "e8f8"],
+        "legalMoveCount": 4,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 6,
+            "closerKingMoves": ["e8f7"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 6,
+            "closerKingMoves": ["e8f7"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 17 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-16",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/8/1k6/8/8/B1B1K2R b K - 0 1",
+        "deficit": 11,
+        "blackInCheck": false,
+        "legalKingMoves": ["b4a4", "b4a5", "b4b3", "b4b5", "b4c4", "b4c5"],
+        "legalMoveCount": 6,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["b4b3"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["b4b3"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 11 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-17",
+        "ac": ["AC-53"],
+        "fen": "8/6p1/5pk1/8/8/8/1Q6/1R4K1 b - - 0 1",
+        "deficit": 12,
+        "blackInCheck": false,
+        "legalKingMoves": ["g6f5", "g6f7", "g6g5", "g6h5", "g6h6", "g6h7"],
+        "legalMoveCount": 7,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 5,
+            "closerKingMoves": ["g6f5", "g6g5", "g6h5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 5,
+            "closerKingMoves": ["g6f5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 12 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-18",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/8/2k5/8/8/4K2Q b - - 0 1",
+        "deficit": 9,
+        "blackInCheck": false,
+        "legalKingMoves": ["c4b3", "c4b4", "c4b5", "c4c3", "c4c5", "c4d3", "c4d4"],
+        "legalMoveCount": 7,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["c4c3", "c4d3"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 5,
+            "closerKingMoves": ["c4d3", "c4d4"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 9 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-19",
+        "ac": ["AC-53"],
+        "fen": "8/8/2k5/8/8/8/1R4PP/5RK1 b - - 0 1",
+        "deficit": 12,
+        "blackInCheck": false,
+        "legalKingMoves": ["c6c5", "c6c7", "c6d5", "c6d6", "c6d7"],
+        "legalMoveCount": 5,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 4,
+            "closerKingMoves": ["c6c5", "c6d5"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 4,
+            "closerKingMoves": ["c6c5", "c6d5"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 12 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-20",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/6k1/8/2B5/3N1PPP/6K1 b - - 0 1",
+        "deficit": 9,
+        "blackInCheck": false,
+        "legalKingMoves": ["g5f4", "g5f5", "g5g4", "g5g6", "g5h4", "g5h5", "g5h6"],
+        "legalMoveCount": 7,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["g5f4", "g5g4", "g5h4"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["g5f4", "g5g4", "g5h4"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 9 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-21",
+        "ac": ["AC-53"],
+        "fen": "k7/8/8/8/8/8/1Q3PPP/6K1 b - - 0 1",
+        "deficit": 12,
+        "blackInCheck": false,
+        "legalKingMoves": ["a8a7"],
+        "legalMoveCount": 1,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 6,
+            "closerKingMoves": ["a8a7"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 6,
+            "closerKingMoves": ["a8a7"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 12 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-22",
+        "ac": ["AC-53"],
+        "fen": "8/3k4/8/8/8/8/2R2PPP/2R3K1 b - - 0 1",
+        "deficit": 13,
+        "blackInCheck": false,
+        "legalKingMoves": ["d7d6", "d7d8", "d7e6", "d7e7", "d7e8"],
+        "legalMoveCount": 5,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 5,
+            "closerKingMoves": ["d7d6", "d7e6"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 5,
+            "closerKingMoves": ["d7d6", "d7e6"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 13 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-23",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/8/4k3/8/8/QR4K1 b - - 0 1",
+        "deficit": 14,
+        "blackInCheck": false,
+        "legalKingMoves": ["e4d3", "e4d5", "e4e3", "e4f3", "e4f4", "e4f5"],
+        "legalMoveCount": 6,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["e4d3", "e4e3", "e4f3"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["e4d3"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 14 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-24",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/8/8/3k4/8/1N2K2R b K - 0 1",
+        "deficit": 8,
+        "blackInCheck": false,
+        "legalKingMoves": ["d3c2", "d3c4", "d3d4", "d3e3", "d3e4"],
+        "legalMoveCount": 5,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 2,
+            "closerKingMoves": ["d3c2"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 2,
+            "closerKingMoves": ["d3c2"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 8 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-25",
+        "ac": ["AC-53"],
+        "fen": "2k5/8/8/8/8/8/PPPPP3/4K3 b - - 0 1",
+        "deficit": 5,
+        "blackInCheck": false,
+        "legalKingMoves": ["c8b7", "c8b8", "c8c7", "c8d7", "c8d8"],
+        "legalMoveCount": 5,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 6,
+            "closerKingMoves": ["c8b7", "c8c7", "c8d7"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 6,
+            "closerKingMoves": ["c8b7", "c8c7", "c8d7"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 5 points, Black to move, not in check."
+      },
+      {
+        "id": "EASY-KING-26",
+        "ac": ["AC-53"],
+        "fen": "8/8/8/8/3k4/8/8/R3K3 b - - 0 1",
+        "deficit": 5,
+        "blackInCheck": false,
+        "legalKingMoves": ["d4c3", "d4c4", "d4c5", "d4d3", "d4d5", "d4e3", "d4e4", "d4e5"],
+        "legalMoveCount": 8,
+        "nearestChildPiece": {
+          "anyWhitePiece": {
+            "distanceNow": 3,
+            "closerKingMoves": ["d4c3", "d4d3", "d4e3"]
+          },
+          "excludingWhiteKing": {
+            "distanceNow": 3,
+            "closerKingMoves": ["d4c3"]
+          }
+        },
+        "stalemateTrapMoves": [],
+        "description": "Black (creature) down 5 points, Black to move, not in check."
+      }
+    ],
+    "stalemateTraps": [
+      {
+        "id": "EASY-STALE-01",
+        "ac": ["AC-51"],
+        "fen": "6k1/8/2K5/8/4Q3/8/8/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Black king g8. Stepping into the corner (g8h8) lets White play Qe4g6, after which h8 has no safe square and is not in check.",
+        "forbiddenMoves": ["g8h8"],
+        "stalematingReplies": {
+          "g8h8": ["e4g6"]
+        },
+        "allowedMoves": ["g8f7", "g8f8", "g8g7"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-02",
+        "ac": ["AC-51"],
+        "fen": "6k1/8/7K/8/8/8/4Q3/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Two of three king moves are traps; only g8f7 is safe.",
+        "forbiddenMoves": ["g8f8", "g8h8"],
+        "stalematingReplies": {
+          "g8h8": ["e2a2", "e2c4", "e2e6", "e2g2", "e2g4"],
+          "g8f8": ["e2e6"]
+        },
+        "allowedMoves": ["g8f7"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-03",
+        "ac": ["AC-51"],
+        "fen": "6k1/3K4/8/8/5Q2/5p2/5P2/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Black also has a blocked f3 pawn that cannot move; g8h8 is a trap.",
+        "forbiddenMoves": ["g8h8"],
+        "stalematingReplies": {
+          "g8h8": ["f4f7"]
+        },
+        "allowedMoves": ["g8g7", "g8h7"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-04",
+        "ac": ["AC-51"],
+        "fen": "1k6/8/8/8/p4K2/P7/5Q2/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Queen side corner with a blocked a4 pawn; b8a8 is a trap.",
+        "forbiddenMoves": ["b8a8"],
+        "stalematingReplies": {
+          "b8a8": ["f2b6"]
+        },
+        "allowedMoves": ["b8b7", "b8c7", "b8c8"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-05",
+        "ac": ["AC-51"],
+        "fen": "6k1/8/6p1/5QP1/8/8/8/1K6 b - - 0 1",
+        "deficit": 9,
+        "description": "Two traps (g8h8, g8h7); the pawn capture g6f5 and g8g7 are safe.",
+        "forbiddenMoves": ["g8h7", "g8h8"],
+        "stalematingReplies": {
+          "g8h8": ["f5f7", "f5g6"],
+          "g8h7": ["f5f8"]
+        },
+        "allowedMoves": ["g6f5", "g8g7"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-06",
+        "ac": ["AC-51"],
+        "fen": "8/1k6/8/4Q3/2K5/8/8/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Two traps (b7a8, b7a6) among six king moves.",
+        "forbiddenMoves": ["b7a6", "b7a8"],
+        "stalematingReplies": {
+          "b7a8": ["e5c7"],
+          "b7a6": ["e5c7"]
+        },
+        "allowedMoves": ["b7a7", "b7b6", "b7c6", "b7c8"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-07",
+        "ac": ["AC-51"],
+        "fen": "5k2/8/5K2/8/8/6p1/6P1/7Q b - - 0 1",
+        "deficit": 9,
+        "description": "Opposition with a blocked g3 pawn; f8g8 is a trap, f8e8 is safe.",
+        "forbiddenMoves": ["f8g8"],
+        "stalematingReplies": {
+          "f8g8": ["h1h6"]
+        },
+        "allowedMoves": ["f8e8"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-08",
+        "ac": ["AC-51"],
+        "fen": "8/k7/8/8/3p4/3P4/6KQ/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Blocked d4 pawn; a7a8 is a trap.",
+        "forbiddenMoves": ["a7a8"],
+        "stalematingReplies": {
+          "a7a8": ["h2c7"]
+        },
+        "allowedMoves": ["a7a6", "a7b6", "a7b7"],
+        "expect": "Level 1 and Level 2 never choose a forbidden move (at least 200 seeded trials per position per level)."
+      },
+      {
+        "id": "EASY-STALE-EDGE-01",
+        "ac": ["AC-51"],
+        "fen": "8/5K1k/8/2Q5/8/8/8/8 b - - 0 1",
+        "deficit": 9,
+        "description": "Edge: every legal Black move allows a stalemating reply, so the rule does not apply; the creature must still play one of its legal moves (no crash, no pass).",
+        "forbiddenMoves": [],
+        "stalematingReplies": {
+          "h7h8": ["c5c2", "c5f5"],
+          "h7h6": ["c5f5"]
+        },
+        "allowedMoves": ["h7h6", "h7h8"],
+        "expect": "Any legal move is accepted; the engine must return a legal move."
+      }
+    ],
+    "repetition": [
+      {
+        "id": "EASY-REP-01",
+        "ac": ["AC-52"],
+        "fen": "8/8/4k3/8/8/2Q5/5PPP/6K1 b - - 0 1",
+        "setupMoves": ["e6d7", "g1f1", "d7e6", "f1g1"],
+        "deficit": 12,
+        "description": "The creature stepped e6d7 and back while the child moved the king g1f1 and back. Playing e6d7 again would recreate the position after the first half move.",
+        "forbiddenMoves": ["e6d7"],
+        "allowedMoves": ["e6d5", "e6d6", "e6e7", "e6f5", "e6f7"],
+        "expect": "After the setup moves, Level 1 and Level 2 never choose a forbidden move (it would recreate a position that already occurred). Repetition identity: piece placement, side to move, castling rights and en passant rights."
+      },
+      {
+        "id": "EASY-REP-02",
+        "ac": ["AC-52"],
+        "fen": "8/8/4k3/8/8/2Q5/5PPP/6K1 b - - 0 1",
+        "setupMoves": ["e6e7", "g1h1", "e7d7", "h1g1", "d7d6", "g1h1", "d6e6", "h1g1"],
+        "deficit": 12,
+        "description": "The creature walked e6 e7 d7 d6 e6 while the child's king went g1 h1 and back twice. Now both e6e7 and e6d6 would recreate earlier positions.",
+        "forbiddenMoves": ["e6d6", "e6e7"],
+        "allowedMoves": ["e6d5", "e6d7", "e6f5", "e6f7"],
+        "expect": "After the setup moves, Level 1 and Level 2 never choose a forbidden move (it would recreate a position that already occurred). Repetition identity: piece placement, side to move, castling rights and en passant rights."
+      },
+      {
+        "id": "EASY-REP-03",
+        "ac": ["AC-52"],
+        "fen": "8/5k2/8/8/8/1R6/5PPP/6K1 b - - 0 1",
+        "setupMoves": ["f7g7", "b3b4", "g7f7", "b4b3"],
+        "deficit": 8,
+        "description": "The child's rook went b3b4 and back. Playing f7g7 again would recreate the position after the first half move.",
+        "forbiddenMoves": ["f7g7"],
+        "allowedMoves": ["f7e6", "f7e7", "f7e8", "f7f6", "f7f8", "f7g6", "f7g8"],
+        "expect": "After the setup moves, Level 1 and Level 2 never choose a forbidden move (it would recreate a position that already occurred). Repetition identity: piece placement, side to move, castling rights and en passant rights."
+      }
+    ]
+  },
+  "emotionEvents": [
+    {
+      "id": "EMO-01",
+      "ac": ["AC-18"],
+      "description": "Child quiet opening move.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "move": "e2e4",
+      "mover": "child",
+      "events": [],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "idle",
+      "expectedEmotionV01": "idle"
+    },
+    {
+      "id": "EMO-02",
+      "ac": ["AC-18"],
+      "description": "Child gives check with a rook (not mate).",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 0 1",
+      "move": "a1a8",
+      "mover": "child",
+      "events": ["check"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-03",
+      "ac": ["AC-18"],
+      "description": "Child captures a rook (5 points), no check.",
+      "fen": "4k3/8/8/3r4/8/8/8/3QK3 w - - 0 1",
+      "move": "d1d5",
+      "mover": "child",
+      "events": ["capture_5plus"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "surprised",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-04",
+      "ac": ["AC-18"],
+      "description": "Child captures the queen (9 points), no check.",
+      "fen": "4k3/8/8/8/3q4/8/8/3RK3 w - - 0 1",
+      "move": "d1d4",
+      "mover": "child",
+      "events": ["capture_5plus"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "surprised",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-05",
+      "ac": ["AC-18"],
+      "description": "Child captures a knight (3 points).",
+      "fen": "4k3/8/8/8/3n4/8/8/3RK3 w - - 0 1",
+      "move": "d1d4",
+      "mover": "child",
+      "events": ["capture_other"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-06",
+      "ac": ["AC-18"],
+      "description": "Child captures a pawn en passant (1 point).",
+      "fen": "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 1",
+      "move": "e5d6",
+      "mover": "child",
+      "events": ["capture_other"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-07",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child captures a rook with check. Check (priority 2) wins over capture of 5+.",
+      "fen": "4k3/8/8/1r6/8/8/8/1Q2K3 w - - 0 1",
+      "move": "b1b5",
+      "mover": "child",
+      "events": ["check", "capture_5plus"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-08",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child captures a knight with check.",
+      "fen": "4k3/8/8/1n6/8/8/8/1Q2K3 w - - 0 1",
+      "move": "b1b5",
+      "mover": "child",
+      "events": ["check", "capture_other"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-09",
+      "ac": ["AC-18"],
+      "description": "Child checkmates (back rank), no capture: child wins, creature Sad.",
+      "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+      "move": "a1a8",
+      "mover": "child",
+      "events": ["checkmate", "check"],
+      "resultStatus": "checkmate",
+      "expectedEmotionPrd": "sad",
+      "expectedEmotionV01": "sad"
+    },
+    {
+      "id": "EMO-10",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child captures a rook, gives check and checkmates. Result (priority 1) wins.",
+      "fen": "4r1k1/5ppp/8/8/8/8/5PPP/4R1K1 w - - 0 1",
+      "move": "e1e8",
+      "mover": "child",
+      "events": ["checkmate", "check", "capture_5plus"],
+      "resultStatus": "checkmate",
+      "expectedEmotionPrd": "sad",
+      "expectedEmotionV01": "sad"
+    },
+    {
+      "id": "EMO-11",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child captures a rook and the result is stalemate. Draw: Good sport.",
+      "fen": "7k/5r2/6K1/8/8/8/8/5Q2 w - - 0 1",
+      "move": "f1f7",
+      "mover": "child",
+      "events": ["stalemate", "capture_5plus"],
+      "resultStatus": "stalemate",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-12",
+      "ac": ["AC-18"],
+      "description": "Child quiet move that stalemates: Good sport.",
+      "fen": "7k/4Q3/6K1/8/8/8/8/8 w - - 0 1",
+      "move": "e7f7",
+      "mover": "child",
+      "events": ["stalemate"],
+      "resultStatus": "stalemate",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-13",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child captures the last black pawn, insufficient material draw.",
+      "fen": "8/8/8/8/3k4/8/3pK3/8 w - - 0 1",
+      "move": "e2d2",
+      "mover": "child",
+      "events": ["draw_insufficient", "capture_other"],
+      "resultStatus": "draw_insufficient",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-14",
+      "ac": ["AC-18"],
+      "description": "Child quiet move reaches the 50 move rule: draw.",
+      "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 99 80",
+      "move": "a1a2",
+      "mover": "child",
+      "events": ["draw_fifty"],
+      "resultStatus": "draw_fifty",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-15",
+      "ac": ["AC-18"],
+      "description": "Child's move completes threefold repetition: draw.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["e2e4", "g8f6", "g1f3", "f6g8", "f3g1", "g8f6", "g1f3", "f6g8"],
+      "move": "f3g1",
+      "mover": "child",
+      "events": ["draw_threefold"],
+      "resultStatus": "draw_threefold",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-16",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child castles and the rook gives check.",
+      "fen": "5k2/8/8/8/8/8/8/4K2R w K - 0 1",
+      "move": "e1g1",
+      "mover": "child",
+      "events": ["check"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-17",
+      "ac": ["AC-18"],
+      "description": "Multiple events: child promotes by capturing a rook, with check.",
+      "fen": "1r2k3/P7/8/8/8/8/8/4K3 w - - 0 1",
+      "move": "a7b8q",
+      "mover": "child",
+      "events": ["check", "capture_5plus"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "worried",
+      "expectedEmotionV01": "sad_short"
+    },
+    {
+      "id": "EMO-18",
+      "ac": ["AC-18"],
+      "description": "Child promotes to a queen without capture or check: no event, Idle.",
+      "fen": "8/P7/7k/7p/8/8/8/4K3 w - - 0 1",
+      "move": "a7a8q",
+      "mover": "child",
+      "events": [],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "idle",
+      "expectedEmotionV01": "idle"
+    },
+    {
+      "id": "EMO-19",
+      "ac": ["AC-18"],
+      "description": "Creature quiet reply.",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "move": "e7e5",
+      "mover": "creature",
+      "events": [],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "idle",
+      "expectedEmotionV01": "idle"
+    },
+    {
+      "id": "EMO-20",
+      "ac": ["AC-18"],
+      "description": "Creature gives check (not mate): Happy.",
+      "fen": "r3k3/8/8/8/8/8/8/4K3 b - - 0 1",
+      "move": "a8a1",
+      "mover": "creature",
+      "events": ["check"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "happy",
+      "expectedEmotionV01": "happy"
+    },
+    {
+      "id": "EMO-21",
+      "ac": ["AC-18"],
+      "description": "Creature captures the child's queen, no check: Happy.",
+      "fen": "4k3/8/8/8/3r4/8/6K1/3Q4 b - - 0 1",
+      "move": "d4d1",
+      "mover": "creature",
+      "events": ["capture_5plus"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "happy",
+      "expectedEmotionV01": "happy"
+    },
+    {
+      "id": "EMO-22",
+      "ac": ["AC-18"],
+      "description": "Creature captures a pawn: Happy.",
+      "fen": "4k3/8/8/8/3n4/1P6/7P/6K1 b - - 0 1",
+      "move": "d4b3",
+      "mover": "creature",
+      "events": ["capture_other"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "happy",
+      "expectedEmotionV01": "happy"
+    },
+    {
+      "id": "EMO-23",
+      "ac": ["AC-18"],
+      "description": "Creature captures en passant: Happy.",
+      "fen": "4k3/8/8/8/3Pp3/8/8/4K3 b - d3 0 1",
+      "move": "e4d3",
+      "mover": "creature",
+      "events": ["capture_other"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "happy",
+      "expectedEmotionV01": "happy"
+    },
+    {
+      "id": "EMO-24",
+      "ac": ["AC-18"],
+      "description": "Multiple events: creature captures a rook with check: Happy.",
+      "fen": "4k3/8/8/8/8/8/1q6/R3K3 b - - 0 1",
+      "move": "b2a1",
+      "mover": "creature",
+      "events": ["check", "capture_5plus"],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "happy",
+      "expectedEmotionV01": "happy"
+    },
+    {
+      "id": "EMO-25",
+      "ac": ["AC-18"],
+      "description": "Creature checkmates (fool's mate): Celebrating. With an oops credit left the loss is held (AC-64) but the half move emotion is still Celebrating.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["f2f3", "e7e5", "g2g4"],
+      "move": "d8h4",
+      "mover": "creature",
+      "events": ["checkmate", "check"],
+      "resultStatus": "checkmate",
+      "expectedEmotionPrd": "celebrating",
+      "expectedEmotionV01": "celebrating"
+    },
+    {
+      "id": "EMO-26",
+      "ac": ["AC-18"],
+      "description": "Creature's move stalemates the child: Good sport.",
+      "fen": "K7/8/1k6/8/8/8/8/2q5 b - - 0 1",
+      "move": "c1c7",
+      "mover": "creature",
+      "events": ["stalemate"],
+      "resultStatus": "stalemate",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-27",
+      "ac": ["AC-18"],
+      "description": "Multiple events: creature's king captures the last white pawn, insufficient material: Good sport.",
+      "fen": "8/8/8/8/3K4/8/3Pk3/8 b - - 0 1",
+      "move": "e2d2",
+      "mover": "creature",
+      "events": ["draw_insufficient", "capture_other"],
+      "resultStatus": "draw_insufficient",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-28",
+      "ac": ["AC-18"],
+      "description": "Creature quiet move reaches the 50 move rule: Good sport.",
+      "fen": "4k3/r7/8/8/8/8/8/4K3 b - - 99 80",
+      "move": "a7a6",
+      "mover": "creature",
+      "events": ["draw_fifty"],
+      "resultStatus": "draw_fifty",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-29",
+      "ac": ["AC-18"],
+      "description": "Creature's move completes threefold repetition of the start position: Good sport.",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "setupMoves": ["g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1"],
+      "move": "f6g8",
+      "mover": "creature",
+      "events": ["draw_threefold"],
+      "resultStatus": "draw_threefold",
+      "expectedEmotionPrd": "good_sport",
+      "expectedEmotionV01": "good_sport"
+    },
+    {
+      "id": "EMO-30",
+      "ac": ["AC-18"],
+      "description": "Creature promotes to a queen, no capture or check: Idle.",
+      "fen": "4k3/8/8/8/8/8/p4K2/8 b - - 0 1",
+      "move": "a2a1q",
+      "mover": "creature",
+      "events": [],
+      "resultStatus": "ongoing",
+      "expectedEmotionPrd": "idle",
+      "expectedEmotionV01": "idle"
+    },
+    {
+      "id": "EMO-31",
+      "ac": ["AC-18"],
+      "description": "Multiple events: creature checkmates by capturing a rook on the back rank: Celebrating.",
+      "fen": "4r1k1/8/8/8/8/8/5PPP/4R1K1 b - - 0 1",
+      "move": "e8e1",
+      "mover": "creature",
+      "events": ["checkmate", "check", "capture_5plus"],
+      "resultStatus": "checkmate",
+      "expectedEmotionPrd": "celebrating",
+      "expectedEmotionV01": "celebrating"
+    }
+  ],
+  "resign": [
+    {
+      "id": "RESIGN-01",
+      "ac": ["AC-54"],
+      "level": 1,
+      "description": "Wobble is exactly 9 points down (boundary) after each of its 3 moves; after the child's third reply it resigns instead of moving.",
+      "fen": "k7/8/8/8/8/8/8/3QK3 b - - 0 1",
+      "moves": ["a8b7", "e1e2", "b7c6", "e2e3", "c6b5", "e3e4"],
+      "trace": [
+        {
+          "halfMove": 1,
+          "move": "a8b7",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 1
+        },
+        {
+          "halfMove": 2,
+          "move": "e1e2",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 3,
+          "move": "b7c6",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 2
+        },
+        {
+          "halfMove": 4,
+          "move": "e2e3",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 5,
+          "move": "c6b5",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 3
+        },
+        {
+          "halfMove": 6,
+          "move": "e3e4",
+          "mover": "child",
+          "deficitAfter": 9
+        }
+      ],
+      "expect": {
+        "creatureResignsBeforeNextMove": true,
+        "result": "child_wins_by_resignation",
+        "emotion": "sad_resign",
+        "countsAsWin": true
+      }
+    },
+    {
+      "id": "RESIGN-02",
+      "ac": ["AC-54"],
+      "level": 2,
+      "description": "Same scenario for Clucky (Level 2): resigns.",
+      "fen": "k7/8/8/8/8/8/8/3QK3 b - - 0 1",
+      "moves": ["a8b7", "e1e2", "b7c6", "e2e3", "c6b5", "e3e4"],
+      "trace": [
+        {
+          "halfMove": 1,
+          "move": "a8b7",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 1
+        },
+        {
+          "halfMove": 2,
+          "move": "e1e2",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 3,
+          "move": "b7c6",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 2
+        },
+        {
+          "halfMove": 4,
+          "move": "e2e3",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 5,
+          "move": "c6b5",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 3
+        },
+        {
+          "halfMove": 6,
+          "move": "e3e4",
+          "mover": "child",
+          "deficitAfter": 9
+        }
+      ],
+      "expect": {
+        "creatureResignsBeforeNextMove": true,
+        "result": "child_wins_by_resignation",
+        "emotion": "sad_resign",
+        "countsAsWin": true
+      }
+    },
+    {
+      "id": "RESIGN-03",
+      "ac": ["AC-54"],
+      "level": 5,
+      "description": "Same scenario for Copper Bot (Level 5): never resigns, keeps playing.",
+      "fen": "k7/8/8/8/8/8/8/3QK3 b - - 0 1",
+      "moves": ["a8b7", "e1e2", "b7c6", "e2e3", "c6b5", "e3e4"],
+      "trace": [
+        {
+          "halfMove": 1,
+          "move": "a8b7",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 1
+        },
+        {
+          "halfMove": 2,
+          "move": "e1e2",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 3,
+          "move": "b7c6",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 2
+        },
+        {
+          "halfMove": 4,
+          "move": "e2e3",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 5,
+          "move": "c6b5",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 3
+        },
+        {
+          "halfMove": 6,
+          "move": "e3e4",
+          "mover": "child",
+          "deficitAfter": 9
+        }
+      ],
+      "expect": {
+        "creatureResignsBeforeNextMove": false,
+        "result": "ongoing"
+      }
+    },
+    {
+      "id": "RESIGN-04",
+      "ac": ["AC-54"],
+      "level": 1,
+      "description": "Boundary: only 8 points down (rook and knight) after each of its 3 moves; Wobble does not resign.",
+      "fen": "k7/8/8/8/8/8/8/2NRK3 b - - 0 1",
+      "moves": ["a8b7", "e1e2", "b7c6", "e2e3", "c6b5", "e3e4"],
+      "trace": [
+        {
+          "halfMove": 1,
+          "move": "a8b7",
+          "mover": "creature",
+          "deficitAfter": 8,
+          "downNineStreak": 0
+        },
+        {
+          "halfMove": 2,
+          "move": "e1e2",
+          "mover": "child",
+          "deficitAfter": 8
+        },
+        {
+          "halfMove": 3,
+          "move": "b7c6",
+          "mover": "creature",
+          "deficitAfter": 8,
+          "downNineStreak": 0
+        },
+        {
+          "halfMove": 4,
+          "move": "e2e3",
+          "mover": "child",
+          "deficitAfter": 8
+        },
+        {
+          "halfMove": 5,
+          "move": "c6b5",
+          "mover": "creature",
+          "deficitAfter": 8,
+          "downNineStreak": 0
+        },
+        {
+          "halfMove": 6,
+          "move": "e3e4",
+          "mover": "child",
+          "deficitAfter": 8
+        }
+      ],
+      "expect": {
+        "creatureResignsBeforeNextMove": false,
+        "result": "ongoing"
+      }
+    },
+    {
+      "id": "RESIGN-05",
+      "ac": ["AC-54"],
+      "level": 1,
+      "description": "Only 2 creature moves so far while 9 down: no resignation yet (the streak is 2).",
+      "fen": "k7/8/8/8/8/8/8/3QK3 b - - 0 1",
+      "moves": ["a8b7", "e1e2", "b7c6", "e2e3"],
+      "trace": [
+        {
+          "halfMove": 1,
+          "move": "a8b7",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 1
+        },
+        {
+          "halfMove": 2,
+          "move": "e1e2",
+          "mover": "child",
+          "deficitAfter": 9
+        },
+        {
+          "halfMove": 3,
+          "move": "b7c6",
+          "mover": "creature",
+          "deficitAfter": 9,
+          "downNineStreak": 2
+        },
+        {
+          "halfMove": 4,
+          "move": "e2e3",
+          "mover": "child",
+          "deficitAfter": 9
+        }
+      ],
+      "expect": {
+        "creatureResignsBeforeNextMove": false,
+        "result": "ongoing"
+      }
+    },
+    {
+      "id": "RESIGN-06",
+      "ac": ["AC-54"],
+      "level": 1,
+      "description": "Streak reset: Wobble is 16 down after its first move, then its king captures the queen the child left on f5 (deficit falls to 7). The streak resets to 0 and never reaches 3.",
+      "fen": "8/7p/8/4k3/8/8/5PPP/1Q1R2K1 b - - 0 1",
+      "moves": ["e5f6", "b1f5", "f6f5", "h2h3", "f5g5", "g2g3", "g5f5", "f2f3"],
+      "trace": [
+        {
+          "halfMove": 1,
+          "move": "e5f6",
+          "mover": "creature",
+          "deficitAfter": 16,
+          "downNineStreak": 1
+        },
+        {
+          "halfMove": 2,
+          "move": "b1f5",
+          "mover": "child",
+          "deficitAfter": 16
+        },
+        {
+          "halfMove": 3,
+          "move": "f6f5",
+          "mover": "creature",
+          "deficitAfter": 7,
+          "downNineStreak": 0
+        },
+        {
+          "halfMove": 4,
+          "move": "h2h3",
+          "mover": "child",
+          "deficitAfter": 7
+        },
+        {
+          "halfMove": 5,
+          "move": "f5g5",
+          "mover": "creature",
+          "deficitAfter": 7,
+          "downNineStreak": 0
+        },
+        {
+          "halfMove": 6,
+          "move": "g2g3",
+          "mover": "child",
+          "deficitAfter": 7
+        },
+        {
+          "halfMove": 7,
+          "move": "g5f5",
+          "mover": "creature",
+          "deficitAfter": 7,
+          "downNineStreak": 0
+        },
+        {
+          "halfMove": 8,
+          "move": "f2f3",
+          "mover": "child",
+          "deficitAfter": 7
+        }
+      ],
+      "expect": {
+        "creatureResignsBeforeNextMove": false,
+        "result": "ongoing"
+      }
+    }
+  ],
+  "emotionEventsNotes": ["Exactly one emotion per half move (PRD 6.1). Priority: result, check, capture of 5 or more points, any other capture, none.", "v0.1 fallback: worried and surprised play sad_short.", "A result on the child's move: checkmate gives sad; any draw gives good_sport. On the creature's move: checkmate gives celebrating; any draw gives good_sport.", "Promotion and castling are not events by themselves; they count only through check or capture.", "Resignation is not a half move: the big sad_resign plays when Level 1 or 2 resigns before its move (see resign scenarios)."],
+  "resignNotes": ["downNineStreak counts consecutive creature moves after which the deficit is 9 or more; any creature move that leaves the deficit below 9 resets it to 0.", "Resignation happens before the creature's next move, that is right after the child's reply that follows the third qualifying creature move.", "Oops interplay (AC-66): if the child uses oops after the third qualifying creature move, the undone creature move is removed from the streak (streak goes back to 2)."]
+}
