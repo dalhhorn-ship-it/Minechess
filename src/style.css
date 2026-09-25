@@ -43,13 +43,18 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 /* ---------- blocks ---------- */
 
 .panel {
-  background: var(--tex-plank) 0 0 / 64px 64px;
-  image-rendering: pixelated;
-  border: var(--px) solid var(--ink);
+  background: #c6c6c6;
+  border: 3px solid #000;
+  border-radius: 6px;
   box-shadow:
-    inset var(--px) var(--px) 0 rgba(255, 255, 255, 0.35),
-    inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0, 0, 0, 0.3),
-    0 6px 0 rgba(29, 43, 79, 0.35);
+    inset 5px 5px 0 #ffffff,
+    inset -5px -5px 0 #555555,
+    0 8px 0 rgba(0, 0, 0, 0.3);
+}
+/* Dark inset item slot, like an inventory square. */
+.slot {
+  background: #8b8b8b;
+  box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #ffffff;
 }
 
 .btn {
@@ -59,20 +64,20 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
   width: 80px;
   height: 80px;
   padding: 12px;
-  border: var(--px) solid var(--ink);
-  background: var(--tex-cobble) 0 0 / 48px 48px;
+  border: 3px solid #000;
+  background: #7d7d7d var(--tex-cobble) 0 0 / 48px 48px;
   image-rendering: pixelated;
-  color: var(--ink);
+  color: #fff;
+  text-shadow: 2px 2px 0 #3f3f3f;
   font: inherit;
   cursor: pointer;
-  box-shadow:
-    inset var(--px) var(--px) 0 rgba(255, 255, 255, 0.45),
-    inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0, 0, 0, 0.35);
+  box-shadow: inset 4px 4px 0 rgba(255, 255, 255, 0.5), inset -4px -6px 0 rgba(0, 0, 0, 0.45);
   touch-action: manipulation;
 }
 .btn:active { transform: translateY(3px) scale(0.96); }
 .btn.go { background: var(--tex-grass) 0 0 / 48px 48px; }
-.btn.round { background-color: var(--paper); background-image: none; }
+.btn.round { background: #c6c6c6; }
+.btn.round svg { filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.25)); }
 
 /* ---------- home ---------- */
 
@@ -88,14 +93,15 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 }
 .card:active { transform: translateY(4px); }
 .card .creature { width: 150px; height: 150px; animation-delay: var(--delay); }
-.card-name { font-size: 26px; text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.6); }
+.card-name { font-size: 26px; color: #3f3f3f; }
+.card .creature { padding: 6px; }
 .stars { display: flex; gap: 4px; height: 26px; }
 .stars span { width: 26px; }
 .stars .off { opacity: 0.25; filter: grayscale(1); }
 .card-play {
-  width: 84px; height: 64px; padding: 12px 22px;
-  background: var(--tex-grass) 0 0 / 48px 48px; border: var(--px) solid var(--ink);
-  box-shadow: inset var(--px) var(--px) 0 rgba(255,255,255,.4), inset calc(var(--px) * -1) calc(var(--px) * -1) 0 rgba(0,0,0,.3);
+  width: 100px; height: 64px; padding: 12px 28px;
+  background: var(--tex-grass) 0 0 / 48px 48px; border: 3px solid #000;
+  box-shadow: inset 4px 4px 0 rgba(255,255,255,.45), inset -4px -6px 0 rgba(0,0,0,.4);
 }
 
 .sky { position: absolute; inset: 0; pointer-events: none; }
@@ -107,11 +113,15 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .ground {
   position: absolute; left: 0; right: 0; bottom: 0; height: 12vh;
   background: var(--tex-grass) 0 0 / 64px 64px repeat-x, var(--tex-dirt) 0 0 / 64px 64px;
-  background-size: 64px 24px, 64px 64px;
-  background-position: 0 0, 0 24px;
-  border-top: var(--px) solid var(--ink);
+  background-size: 64px 28px, 64px 64px;
+  background-position: 0 0, 0 28px;
+  box-shadow: inset 0 6px 0 rgba(255, 255, 255, 0.25), inset 0 -10px 0 rgba(0, 0, 0, 0.2);
   image-rendering: pixelated;
 }
+.trees { position: absolute; left: 0; right: 0; bottom: calc(12vh - 6px); height: 0; pointer-events: none; }
+.tree { position: absolute; bottom: 0; width: 120px; height: 176px; }
+.tree.t1 { left: 3%; }
+.tree.t2 { right: 4%; width: 96px; height: 141px; }
 
 /* ---------- game layout ---------- */
 
@@ -122,16 +132,21 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
   align-items: center;
   gap: 24px;
   padding: 24px;
-  background: linear-gradient(var(--sky), #a9dcf5 70%);
+  background: linear-gradient(var(--sky), #a9dcf5 80%);
+  isolation: isolate;
+}
+.game::before {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28px; z-index: -1;
+  background: var(--tex-grass) 0 0 / 48px 48px; image-rendering: pixelated;
 }
 .side { height: var(--board); display: flex; flex-direction: column; align-items: center; padding: 14px 10px; gap: 12px; }
 
 .child-side .home { align-self: flex-start; }
-.avatar-block { width: 96px; height: 96px; padding: 10px; border: var(--px) solid var(--ink); background: var(--tex-sand) 0 0 / 48px 48px; transition: box-shadow 0.15s; }
-.avatar-block.active, .creature-ring.active { box-shadow: 0 0 0 6px var(--gold), 0 0 24px 10px rgba(245, 200, 76, 0.8); animation: glow 1.6s ease-in-out infinite; }
+.avatar-block { width: 96px; height: 96px; padding: 10px; background: #8b8b8b; box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #ffffff; transition: box-shadow 0.15s; }
+.avatar-block.active, .creature-ring.active { box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #fff, 0 0 0 6px var(--gold), 0 0 24px 10px rgba(245, 200, 76, 0.8); animation: glow 1.6s ease-in-out infinite; }
 @keyframes glow { 50% { box-shadow: 0 0 0 6px var(--gold), 0 0 10px 4px rgba(245, 200, 76, 0.5); } }
 
-.tray { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; align-content: flex-start; flex: 1; width: 100%; }
+.tray { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; align-content: flex-start; flex: 1; width: 100%; padding: 6px; background: #8b8b8b; box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #ffffff; }
 .tray svg { width: 30px; height: 30px; }
 
 .oops-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 40px; }
@@ -139,21 +154,23 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .oops.disabled { filter: grayscale(1) opacity(0.55); }
 .oops.glow { animation: glow 1.2s ease-in-out infinite; }
 .tokens { display: flex; gap: 10px; }
-.token { width: 30px; height: 30px; background: var(--gold); border: var(--px) solid var(--ink); box-shadow: inset 4px 4px 0 rgba(255, 255, 255, 0.5); }
+.token { width: 30px; height: 30px; background: var(--gold); border: 3px solid #000; box-shadow: inset 4px 4px 0 rgba(255, 255, 255, 0.6), inset -4px -4px 0 #b8860b; }
 .token.used { background: transparent; border-style: dashed; box-shadow: none; }
 .see-result { width: 96px; height: 96px; position: absolute; left: calc(24px + var(--child-w) / 2 - 48px); bottom: 50%; }
 
 .board-wrap { position: relative; width: var(--board); height: var(--board); }
 .board-frame {
   width: 100%; height: 100%; padding: 12px;
-  background: var(--tex-framestone) 0 0 / 64px 64px; image-rendering: pixelated;
-  border: var(--px) solid var(--ink);
-  box-shadow: inset 4px 4px 0 rgba(255,255,255,.25), inset -4px -4px 0 rgba(0,0,0,.3), 0 8px 0 rgba(29,43,79,.35);
+  background: var(--tex-grass) 0 0 / 48px 48px; image-rendering: pixelated;
+  border: 3px solid #000;
+  box-shadow:
+    inset 4px 4px 0 rgba(255,255,255,.3), inset -4px -4px 0 rgba(0,0,0,.3),
+    0 18px 0 -2px #7a4f31, 0 18px 0 1px #000, 0 26px 0 rgba(0, 0, 0, 0.25);
 }
 .board-frame.over .board { filter: brightness(0.8); }
 .board { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; touch-action: none; }
 
-.sq { position: relative; image-rendering: pixelated; }
+.sq { position: relative; image-rendering: pixelated; box-shadow: inset 3px 3px 0 rgba(255, 255, 255, 0.35), inset -3px -3px 0 rgba(0, 0, 0, 0.22); }
 .sq.light { background: var(--tex-sand) 0 0 / 100% 100%; }
 .sq.dark { background: var(--tex-stone) 0 0 / 100% 100%; }
 .sq > svg { position: relative; z-index: 2; width: 82%; height: 82%; margin: 9%; filter: drop-shadow(0 3px 0 rgba(29, 43, 79, 0.35)); }
@@ -162,6 +179,7 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .sq::before, .sq::after { content: ""; position: absolute; pointer-events: none; }
 .sq.last::before { inset: 0; background: rgba(242, 201, 76, 0.5); z-index: 1; box-shadow: inset 0 0 0 3px rgba(161, 102, 47, 0.6); }
 .sq.selected { box-shadow: inset 0 0 0 6px var(--blue); }
+.sq > svg.piece { width: 86%; height: 86%; margin: 5% 7% 9% 7%; }
 .sq.selected > svg { transform: translateY(-8%); filter: drop-shadow(0 8px 0 rgba(29, 43, 79, 0.4)); }
 .sq.dot::after { z-index: 3; width: 28%; height: 28%; left: 36%; top: 36%; background: var(--blue); border: 3px solid #fff; }
 .sq.dot.preview::after { background: #8b93a3; }
@@ -213,8 +231,8 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 .bubble-text { min-width: 0; }
 .creature-stage { position: relative; width: 180px; height: 180px; margin-top: 100px; }
 .creature { width: 100%; height: 100%; transform-origin: 50% 100%; }
-.creature-ring { width: 140px; height: 14px; border: var(--px) solid var(--ink); background: rgba(29, 43, 79, 0.2); }
-.creature-name { font-size: 22px; text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.6); }
+.creature-ring { width: 140px; height: 14px; background: #8b8b8b; box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #ffffff; }
+.creature-name { font-size: 22px; color: #3f3f3f; }
 .extras { position: absolute; inset: 0; pointer-events: none; }
 .thought { position: absolute; top: -8px; right: 0; display: flex; gap: 6px; }
 .thought i { width: 14px; height: 14px; background: #fff; border: 3px solid var(--ink); animation: rise 1.2s ease-in-out infinite; }
@@ -254,8 +272,8 @@ svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 /* ---------- overlays ---------- */
 
 .overlay { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: rgba(29, 43, 79, 0.45); }
-.promo-row { display: flex; gap: 20px; padding: 24px; background: var(--tex-plank) 0 0 / 64px 64px; border: var(--px) solid var(--ink); }
-.promo-btn { width: 120px; height: 120px; background-color: var(--paper); background-image: var(--tex-sand); background-size: 48px 48px; }
+.promo-row { display: flex; gap: 20px; padding: 24px; background: #c6c6c6; border: 3px solid #000; box-shadow: inset 5px 5px 0 #fff, inset -5px -5px 0 #555; }
+.promo-btn { width: 120px; height: 120px; background: #8b8b8b; box-shadow: inset 3px 3px 0 #373737, inset -3px -3px 0 #fff; }
 .result-card { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; gap: 20px 40px; padding: 32px 40px; align-items: center; }
 .big-pic { width: 200px; height: 200px; display: grid; place-items: center; }
 .big-pic.win svg { animation: hop 0.8s ease-out infinite; }

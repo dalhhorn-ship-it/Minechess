@@ -2,6 +2,33 @@
 
 export type Palette = Record<string, string>;
 
+const INK = '#1d2b4f';
+
+export function shade(hex: string, f: number): string {
+  const n = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return '#' + n.map((v) => Math.max(0, Math.min(255, Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f)))).toString(16).padStart(2, '0')).join('');
+}
+
+/** A 3D box: front rectangle, top and right side as slanted faces, with a thick outline and a few texture specks. */
+export function box(x: number, y: number, w: number, h: number, d: number, color: string, specks = 0): string {
+  const top = `${x},${y} ${x + d},${y - d} ${x + w + d},${y - d} ${x + w},${y}`;
+  const side = `${x + w},${y} ${x + w + d},${y - d} ${x + w + d},${y + h - d} ${x + w},${y + h}`;
+  const line = `stroke="${INK}" stroke-width="0.7" stroke-linejoin="round"`;
+  let tex = '';
+  let seed = Math.round(x * 31 + y * 17 + w);
+  for (let i = 0; i < specks; i++) {
+    seed = (seed * 16807) % 2147483647;
+    const sx = x + 1 + (seed % Math.max(1, w - 3));
+    seed = (seed * 16807) % 2147483647;
+    const sy = y + 1 + (seed % Math.max(1, h - 3));
+    tex += `<rect x="${sx}" y="${sy}" width="1.2" height="1.2" fill="${shade(color, -0.12)}"/>`;
+  }
+  return `<polygon points="${side}" fill="${shade(color, -0.28)}" ${line}/>` +
+    `<polygon points="${top}" fill="${shade(color, 0.35)}" ${line}/>` +
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}" ${line}/>` + tex;
+}
+
+
 /** Turns a character grid into a crisp SVG. '.' is transparent. */
 export function pixelSvg(rows: string[], palette: Palette, cls = ''): string {
   const h = rows.length;
@@ -75,4 +102,37 @@ function planks(): string {
   for (const y of [3, 7, 11, 15]) ctx.fillRect(0, y, 16, 1);
   for (const [x, y] of [[5, 0], [12, 4], [3, 8], [9, 12]]) ctx.fillRect(x, y, 1, 3);
   return canvas.toDataURL();
+}
+
+/** Extrudes a character grid into a 3D block shape: solid stacked layers for depth, light top edges, crisp front. */
+export function extrudedSvg(rows: string[], colors: Record<string, string>, top: string, side: string, depth: number, cls = ''): string {
+  const filled = (x: number, y: number) => y >= 0 && y < rows.length && x >= 0 && x < rows[y].length && rows[y][x] !== '.';
+  let silhouette = '';
+  let tops = '';
+  let front = '';
+  rows.forEach((row, y) => {
+    let x = 0;
+    while (x < row.length) {
+      if (row[x] === '.') { x++; continue; }
+      let run = 1;
+      while (x + run < row.length && row[x + run] !== '.') run++;
+      silhouette += `<rect x="${x}" y="${y}" width="${run}" height="1.05"/>`;
+      x += run;
+    }
+    for (let cx = 0; cx < row.length; cx++) {
+      const ch = row[cx];
+      if (ch === '.') continue;
+      if (!filled(cx, y - 1)) tops += `<polygon points="${cx},${y} ${cx + depth},${y - depth} ${cx + 1 + depth},${y - depth} ${cx + 1.02},${y}"/>`;
+      front += `<rect x="${cx}" y="${y}" width="1.03" height="1.03" fill="${colors[ch]}"/>`;
+    }
+  });
+  const steps = Math.ceil(depth / 0.15);
+  let layers = '';
+  for (let i = steps; i >= 1; i--) {
+    const o = (depth * i) / steps;
+    layers += `<g transform="translate(${o} ${-o})">${silhouette}</g>`;
+  }
+  const w = Math.max(...rows.map((r) => r.length));
+  return `<svg class="${cls}" viewBox="0 ${-depth} ${w + depth} ${rows.length + depth}" aria-hidden="true">` +
+    `<g fill="${side}">${layers}</g><g fill="${top}">${tops}</g><g shape-rendering="crispEdges">${front}</g></svg>`;
 }

@@ -1,4 +1,4 @@
-import { pixelSvg } from './pixel';
+import { extrudedSvg } from './pixel';
 
 const INK = '#1d2b4f';
 
@@ -130,5 +130,6 @@ export type IconName = keyof typeof ICONS;
 
 export function icon(name: IconName, cls = 'icon'): string {
   const i = ICONS[name];
-  return pixelSvg(i.rows, i.pal, cls);
+  // Icons get a little block depth too, so they read as 3D items like the pieces.
+  return extrudedSvg(i.rows, i.pal, '#5b6b8c', '#0b1226', 0.8, cls);
 }

@@ -28,7 +28,7 @@ Typical flow: product-manager, red-team, ux-ipad-kids and ux-designer, solution-
 ## Build (v0.1)
 
 Stack: Vite + TypeScript, no UI framework, Vitest. Answers PRD Q7 and Q8:
-1. **Art (Q7):** pixel art drawn in code (`src/ui/pixel.ts`, `pieces.ts`, `icons.ts`, `creatureArt.ts`), with a blocky world look (plank panels, stone buttons, grass and dirt) as the owner asked. All textures are generated at runtime; no external assets, fonts or requests.
+1. **Art (Q7):** pixel art drawn in code (`src/ui/pixel.ts`, `pieces.ts`, `icons.ts`, `creatureArt.ts`), with a 3D block world look as the owner asked: pieces, icons and title are extruded block figures, creatures are built from 3D boxes, panels use an inventory style grey with item slots, and the board sits on a grass block. All textures are generated at runtime; no external assets, fonts or requests.
 2. **Engine (Q8):** own engine in `src/engine` (perft verified). Rules sit behind a `RuleSet` so mine chess can be added as a variant. Creature AI in `src/ai` runs in a Web Worker.
 
 Layout: `src/engine` pure rules, `src/ai` creature move choice, `src/game` match state (oops, resign, emotions), `src/ui` screens.

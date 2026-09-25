@@ -1,5 +1,5 @@
+import { extrudedSvg } from './pixel';
 import type { Color, PieceType } from '../engine';
-import { pixelSvg } from './pixel';
 
 const MAPS: Record<PieceType, string[]> = {
   p: [
@@ -34,16 +34,19 @@ const MAPS: Record<PieceType, string[]> = {
   ],
 };
 
-/** Light pieces: warm white with ink outline. Dark pieces: charcoal with a light rim (visual-language.md). */
+/** Light pieces look like pale stone blocks, dark pieces like dark stone; top faces catch the light. */
 const PALETTES = {
-  w: { o: '#1d2b4f', f: '#fffbf2', e: '#1d2b4f' },
-  b: { o: '#fffbf2', f: '#2e3440', e: '#fffbf2' },
+  w: { o: '#1d2b4f', f: '#f4efe4', e: '#1d2b4f', top: '#ffffff', side: '#b3aa98' },
+  b: { o: '#0f1218', f: '#3b4252', e: '#f4efe4', top: '#6b7589', side: '#1b1e25' },
 };
 
 const cache = new Map<string, string>();
 
 export function pieceSvg(type: PieceType, color: Color): string {
   const key = type + color;
-  if (!cache.has(key)) cache.set(key, pixelSvg(MAPS[type], PALETTES[color], `piece piece-${color}`));
+  if (!cache.has(key)) {
+    const pal = PALETTES[color];
+    cache.set(key, extrudedSvg(MAPS[type], { o: pal.o, f: pal.f, e: pal.e }, pal.top, pal.side, 1.6, `piece piece-${color}`));
+  }
   return cache.get(key)!;
 }

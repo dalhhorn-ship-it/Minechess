@@ -2,7 +2,7 @@ import type { CreatureId } from '../ai/creatures';
 import { CREATURES } from '../ai/creatures';
 import { creatureSvg } from './creatureArt';
 import { icon } from './icons';
-import { pixelSvg } from './pixel';
+import { box, extrudedSvg } from './pixel';
 
 const LETTERS: Record<string, string[]> = {
   M: ['x...x', 'xx.xx', 'x.x.x', 'x...x', 'x...x', 'x...x', 'x...x'],
@@ -14,22 +14,19 @@ const LETTERS: Record<string, string[]> = {
   S: ['.xxx', 'x...', 'x...', '.xx.', '...x', '...x', 'xxx.'],
 };
 
-/** Blocky title: each letter pixel is a small block with a light top and dark shadow. */
+/** Title in 3D stone letters, like carved blocks. */
 function title(text: string): string {
-  const rows = Array.from({ length: 9 }, () => '');
+  const rows = Array.from({ length: 7 }, () => '');
   for (const ch of text) {
     const l = LETTERS[ch];
-    const w = l[0].length;
-    for (let y = 0; y < 9; y++) {
-      let row = '';
-      for (let x = 0; x < w + 2; x++) {
-        const on = (yy: number, xx: number) => yy >= 0 && yy < 7 && xx >= 0 && xx < w && l[yy][xx] === 'x';
-        row += on(y, x) ? (y < 3 ? 'g' : 'd') : on(y - 1, x - 1) ? 's' : '.';
-      }
-      rows[y] += row;
-    }
+    for (let y = 0; y < 7; y++) rows[y] += l[y].replace(/x/g, y < 2 ? 'g' : 's') + '..';
   }
-  return pixelSvg(rows, { g: '#7ed957', d: '#4caf3a', s: 'rgba(29,43,79,0.35)' }, 'title-svg');
+  return extrudedSvg(rows.map((r) => r.slice(0, -2)), { g: '#7ed957', s: '#9a9a9a' }, '#d2d2d2', '#4d4d4d', 0.9, 'title-svg');
+}
+
+/** A blocky tree: trunk box with a leaf cube on top. */
+function tree(): string {
+  return `<svg viewBox="-2 -4 30 44" aria-hidden="true">${box(10, 22, 6, 16, 3, '#7a5530', 3)}${box(2, 4, 22, 18, 6, '#4f9a3a', 14)}</svg>`;
 }
 
 export function homeScreen(play: (id: CreatureId) => void): HTMLElement {
@@ -47,6 +44,7 @@ export function homeScreen(play: (id: CreatureId) => void): HTMLElement {
           <div class="card-play">${icon('play')}</div>
         </button>`).join('')}
     </div>
+    <div class="trees"><i class="tree t1">${tree()}</i><i class="tree t2">${tree()}</i></div>
     <div class="ground"></div>`;
   el.querySelectorAll<HTMLElement>('.card').forEach((card) =>
     card.addEventListener('click', () => play(card.dataset.id as CreatureId)),
