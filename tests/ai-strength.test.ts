@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CREATURES } from '../src/ai/creatures';
 import { playBotGame } from './helpers/bot';
 import type { CreatureId } from '../src/ai/creatures';
 
@@ -39,5 +40,30 @@ describe('Copper Bot is a fair 3 star challenge (owner: it was too strong)', () 
     console.log('careful kid wins', kidWins, '/40; random bot beats copper', botWins, '/20');
     expect(kidWins).toBeGreaterThanOrEqual(12);
     expect(botWins).toBeLessThanOrEqual(5);
+  }, 900_000);
+});
+
+describe('the new creatures (owner: 4 very easy, 4 a bit smarter)', () => {
+  const easy = CREATURES.filter((c) => c.stars === 1 && !['wobble', 'clucky'].includes(c.id));
+  for (const c of easy) {
+    it(`${c.name} (1 star) loses at least 80 percent to the scripted bot`, () => {
+      let wins = 0;
+      for (let i = 1; i <= 30; i++) if (playBotGame(c.id, i)?.kind === 'win') wins++;
+      expect(wins).toBeGreaterThanOrEqual(24);
+    }, 600_000);
+  }
+
+  it('careful kid win rates follow the stars: 2 star creatures are easier than 3 star ones', async () => {
+    const { playKidGame } = await import('./helpers/bot');
+    const rate = (id: CreatureId) => {
+      let w = 0;
+      for (let i = 1; i <= 16; i++) if (playKidGame(id, i)?.kind === 'win') w++;
+      return w / 16;
+    };
+    const two = ['knor', 'stip'].map((id) => rate(id as CreatureId));
+    const three = ['ijzer', 'kristal'].map((id) => rate(id as CreatureId));
+    console.log('careful kid win rate 2 stars', two, '3 stars', three);
+    for (const r of [...two, ...three]) expect(r).toBeGreaterThanOrEqual(0.2);
+    expect(Math.min(...two)).toBeGreaterThan(Math.max(...three));
   }, 900_000);
 });

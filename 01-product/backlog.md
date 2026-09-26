@@ -10,6 +10,7 @@ Ordered by priority. Sources: product director review after v0.1, owner feedback
 | 2 | Kid playtest, two short sessions per child (Part B) | v0.1 definition of done item 6; decides the v0.2 order |
 | 3 | Fix what the check, the playtest and the code review find | Keep v0.1 solid before adding more |
 | 4 | **Done:** strategy lessons in Dutch for ages 8 and up, reachable from the start screen (owner request, pulls part of F14 forward) | Owner asked for it; the owner wants to learn too |
+| 4d | **Done:** 8 extra creatures (Snurk, Plons, Fizz, Muddle very easy; Knor, Stip, IJzerwachter, Kristal a bit smarter) and 8 letter names in the hall of fame (owner request) | More variety for both kids; balance checked by tests |
 | 4c | **Done:** more emotions (crying), longer bubbles, sound effects and original background music with win and loss jingles (owner requests) | Makes the creatures and the game feel alive |
 | 4b | **Done:** old school hall of fame with points per game (owner request): top 10 on the iPad, three letter names | Gives both kids a reason to replay and beat their own score |
 
@@ -19,7 +20,7 @@ Ordered by priority. Sources: product director review after v0.1, owner feedback
 |---|---|---|
 | 5 | Home screen install with icon (F17) and resume a paused game (F12), with storage (TD-02) and the Safari edge swipe fix (TD-12) | Daily play without losing games or progress |
 | 6 | Deep Watcher, 5 stars (F05) | The 9 year old needs a hard opponent; needs faster search first (TD-05) |
-| 7 | Worried and Surprised faces (F06) | Creatures feel more alive at low risk |
+| 7 | ~~Worried and Surprised faces (F06)~~ done in v0.1 | |
 | 8 | AI worker safety net (TD-04) and CI with tests on every push (TD-09) | Prevent a frozen game; catch regressions |
 | 9 | Split the game screen code (TD-01, TD-07) | Makes resume and portrait safe to build |
 

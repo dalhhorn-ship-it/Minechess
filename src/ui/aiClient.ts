@@ -30,7 +30,7 @@ export class AiClient {
   }
 
   /** Resolves with the move, or null when cancelled. */
-  choose(fen: string, history: string[], creature: CreatureId): Promise<string | null> {
+  choose(fen: string, history: string[], creature: CreatureId, lastTo: number | null = null): Promise<string | null> {
     this.cancel();
     const id = ++this.seq;
     this.fen = fen;
@@ -38,7 +38,7 @@ export class AiClient {
       this.pending = resolve;
       this.timer = window.setTimeout(() => this.fail(), TIMEOUT_MS);
       try {
-        this.ensure().postMessage({ id, fen, history, creature, seed: Math.floor(Math.random() * 2 ** 31) });
+        this.ensure().postMessage({ id, fen, history, creature, lastTo, seed: Math.floor(Math.random() * 2 ** 31) });
       } catch {
         this.fail();
       }

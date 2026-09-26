@@ -45,14 +45,12 @@ export function homeScreen(play: (id: CreatureId) => void, learn: () => void, ha
         <button class="card panel" data-id="${c.id}" style="--delay:${i * 0.4}s" aria-label="${c.name}">
           <div class="creature creature-${c.id} emo-idle">${creatureSvg(c.id, 'idle')}</div>
           <div class="card-name">${c.name}</div>
-          <div class="stars">${Array.from({ length: 5 }, (_, s) => `<span class="${s < c.stars ? 'on' : 'off'}">${icon('star')}</span>`).join('')}</div>
-          <div class="card-play">${icon('play')}</div>
+          <div class="stars">${Array.from({ length: 3 }, (_, s) => `<span class="${s < c.stars ? 'on' : 'off'}">${icon('star')}</span>`).join('')}</div>
         </button>`).join('')}
       <button class="card panel learn-card" aria-label="Leren">
         <div class="creature learn-pic">${icon('book')}</div>
         <div class="card-name">Leren</div>
         <div class="stars learn-sub">Zo speel je schaak</div>
-        <div class="card-play">${icon('play')}</div>
       </button>
     </div>
     <div class="trees"><i class="tree t1">${tree()}</i><i class="tree t2">${tree()}</i></div>

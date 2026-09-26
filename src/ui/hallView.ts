@@ -4,6 +4,7 @@ import { creatureSvg } from './creatureArt';
 import { icon } from './icons';
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const NAME_LENGTH = 8;
 const RANK_COLORS = ['#ffd700', '#e0e0e0', '#ff9f43', '#4ef0ff', '#4ef0ff', '#7dff6b', '#7dff6b', '#ff6bd5', '#ff6bd5', '#ff6bd5'];
 
 export interface NewScore {
@@ -11,10 +12,9 @@ export interface NewScore {
   creature: CreatureId;
 }
 
-/** Old school arcade hall of fame: top 10, three letter names, entered with big up and down buttons. */
+/** Old school arcade hall of fame: top 10, names of up to 8 letters typed on a big letter board. */
 export class HallView {
   readonly el: HTMLElement;
-  private letters = [0, 0, 0];
 
   constructor(private home: () => void, private pending?: NewScore) {
     this.el = document.createElement('div');
@@ -29,31 +29,38 @@ export class HallView {
     else this.renderTable(loadHall(), -1);
   }
 
+  private name = '';
+
+  /** Name entry: up to 8 letters on a big on screen letter board (owner request). */
   private renderEntry(s: NewScore) {
     const body = this.el.querySelector('.hall-body')!;
     body.innerHTML = `
       <div class="new-record blink">NIEUW RECORD!</div>
       <div class="entry-score"><span class="count">0</span> PUNTEN</div>
-      <div class="entry-hint">JOUW NAAM:</div>
-      <div class="letters">
-        ${[0, 1, 2].map((i) => `
-          <div class="letter-col">
-            <button class="btn up" data-i="${i}" aria-label="Omhoog">▲</button>
-            <div class="letter" data-i="${i}">A</div>
-            <button class="btn down" data-i="${i}" aria-label="Omlaag">▼</button>
-          </div>`).join('')}
-        <button class="btn go ok" aria-label="Klaar">OK</button>
+      <div class="name-slots">${Array.from({ length: NAME_LENGTH }, (_, i) => `<span class="slot-letter" data-i="${i}"></span>`).join('')}</div>
+      <div class="keyboard">
+        ${LETTERS.split('').map((l) => `<button class="btn key" data-l="${l}">${l}</button>`).join('')}
+        <button class="btn key wide back" aria-label="Wissen">⌫</button>
+        <button class="btn go key wide ok" aria-label="Klaar">OK</button>
       </div>`;
-    body.querySelectorAll<HTMLElement>('.up, .down').forEach((b) =>
-      b.addEventListener('click', () => {
-        const i = Number(b.dataset.i);
-        this.letters[i] = (this.letters[i] + (b.classList.contains('up') ? 1 : 25)) % 26;
-        body.querySelector(`.letter[data-i="${i}"]`)!.textContent = LETTERS[this.letters[i]];
+    const slots = body.querySelectorAll<HTMLElement>('.slot-letter');
+    const draw = () => slots.forEach((el, i) => {
+      el.textContent = this.name[i] ?? '';
+      el.classList.toggle('cursor', i === this.name.length);
+    });
+    body.querySelectorAll<HTMLElement>('.key[data-l]').forEach((k) =>
+      k.addEventListener('click', () => {
+        if (this.name.length < NAME_LENGTH) this.name += k.dataset.l;
+        draw();
       }),
     );
+    body.querySelector('.back')!.addEventListener('click', () => {
+      this.name = this.name.slice(0, -1);
+      draw();
+    });
     body.querySelector('.ok')!.addEventListener('click', () => {
       const entry: HallEntry = {
-        name: this.letters.map((l) => LETTERS[l]).join(''),
+        name: this.name || '???',
         score: s.score,
         creature: s.creature,
         date: new Date().toISOString(),
@@ -63,6 +70,7 @@ export class HallView {
       this.pending = undefined;
       this.renderTable(hall, place);
     });
+    draw();
     // Count the score up like an arcade machine.
     const count = body.querySelector('.count')!;
     const start = performance.now();

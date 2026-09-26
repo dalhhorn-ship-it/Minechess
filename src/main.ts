@@ -1,5 +1,5 @@
 import './style.css';
-import type { CreatureId } from './ai/creatures';
+import { creatureById, type CreatureId } from './ai/creatures';
 import { GameView } from './ui/gameView';
 import { homeScreen } from './ui/home';
 import { LessonView } from './ui/lessonView';
@@ -58,7 +58,7 @@ function play(id: CreatureId) {
   game?.destroy();
   game = new GameView(id, { home, play, hall });
   show(game.el);
-  playSong(id === 'copper' ? 'workshop' : 'adventure');
+  playSong(creatureById(id).stars >= 2 ? 'workshop' : 'adventure');
 }
 
 // Landscape only in v0.1: a picture asks to turn the iPad.

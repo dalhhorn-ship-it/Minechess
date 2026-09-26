@@ -122,6 +122,118 @@ function copper(e: Emotion): string {
   ]);
 }
 
+function snurk(e: Emotion): string {
+  const k = faceKind(e);
+  const z = k === 'idle' || k === 'thinking'
+    ? `<text x="30" y="6" font-size="5" font-weight="900" fill="#5b6b8c">z</text><text x="34" y="1" font-size="4" font-weight="900" fill="#5b6b8c">z</text>`
+    : '';
+  return svgOf([
+    box(8, 31, 3, 4, 2, '#555b66'), box(24, 31, 3, 4, 2, '#555b66'),
+    box(4, 15, 28, 17, 7, '#f4f1e8', 12),
+    box(4, 10, 4, 4, 2, '#7d838d'), box(24, 10, 4, 4, 2, '#7d838d'),
+    box(8, 8, 16, 13, 5, '#8a8f98'),
+    [14, 17, 4, 2, '#e88fa0'],
+    bigFace(face(k, 11, 19, 11, 16, 19, '#e88fa0'), 16, 14, 1.25),
+    z,
+  ]);
+}
+
+function plons(e: Emotion): string {
+  const k = faceKind(e);
+  return svgOf([
+    box(3, 29, 7, 4, 3, '#3f9a33'), box(24, 29, 7, 4, 3, '#3f9a33'),
+    box(4, 17, 26, 14, 8, '#5cbf4a', 6),
+    [9, 25, 16, 5, '#b8e89a'],
+    box(6, 9, 8, 9, 4, '#5cbf4a'), box(20, 9, 8, 9, 4, '#5cbf4a'),
+    [7, 10, 6, 6, '#ffffff'], [21, 10, 6, 6, '#ffffff'],
+    bigFace(face(k, 9, 23, 11, 17, 21, '#e0457b'), 17, 16, 1.15),
+  ]);
+}
+
+function fizz(e: Emotion): string {
+  const k = faceKind(e);
+  const bubbles = [[14, 2, 1.6], [19, -1, 1.2], [22, 3, 1]].map(([x, y, r]) =>
+    `<circle cx="${x}" cy="${y}" r="${r}" fill="#7fd8e8" stroke="#2a8fa3" stroke-width="0.5"/>`).join('');
+  return svgOf([
+    bubbles,
+    box(11, 31, 3, 4, 2, '#c24e00'), box(21, 31, 3, 4, 2, '#c24e00'),
+    box(8, 6, 18, 26, 6, '#ff7a1a', 5),
+    [8, 20, 18, 3, '#ffffff'],
+    bigFace(face(k, 12, 20, 10, 17, 15, '#c24e00'), 17, 12, 1.35),
+  ]);
+}
+
+function muddle(e: Emotion): string {
+  const k = faceKind(e);
+  return svgOf([
+    box(2, 22, 5, 5, 3, '#f59bb0'), box(27, 22, 5, 5, 3, '#f59bb0'),
+    box(8, 31, 4, 3, 2, '#5a3521'), box(22, 31, 4, 3, 2, '#5a3521'),
+    box(6, 12, 22, 20, 7, '#8d5a3b', 7),
+    [10, 24, 14, 8, '#c79a74'],
+    box(9, 6, 16, 6, 5, '#ffc928'), box(10, 7, 3, 3, 1, '#fff4b0'),
+    [10, 15, 6, 6, '#1d2b4f'], [18, 15, 6, 6, '#1d2b4f'], [11, 16, 4, 4, '#dfe8f5'], [19, 16, 4, 4, '#dfe8f5'],
+    bigFace(face(k, 12, 20, 17, 17, 25, '#f59bb0'), 17, 20, 1.0),
+    [16, 21, 3, 2, '#f59bb0'], [17, 20, 1, 4, '#f59bb0'],
+  ]);
+}
+
+function knor(e: Emotion): string {
+  const k = faceKind(e);
+  return svgOf([
+    box(7, 30, 4, 4, 2, '#c9962a'), box(22, 30, 4, 4, 2, '#c9962a'),
+    `<path d="M35 19 q3 -2 1 -4 q-2 -2 -3 1" fill="none" stroke="#c9962a" stroke-width="1.2"/>`,
+    box(4, 13, 28, 18, 8, '#f2c14e', 7),
+    `<polygon points="15,10.5 22,10.5 23,9.5 16,9.5" fill="#6b4a12"/>`,
+    box(7, 9, 5, 4, 2, '#e0a82e'), box(23, 9, 5, 4, 2, '#e0a82e'),
+    bigFace(face(k, 11, 22, 16, 17, 28, '#b5651d'), 17, 20, 1.1),
+    box(13, 21, 8, 5, 3, '#e0a82e'), [15, 23, 1.2, 1.5, '#6b4a12'], [18, 23, 1.2, 1.5, '#6b4a12'],
+  ]);
+}
+
+function stip(e: Emotion): string {
+  const k = faceKind(e);
+  const dots = [[7, 20], [26, 20], [8, 28], [25, 28], [16, 30]].map(([x, y]) => [x, y, 3, 3, '#1b1b1b'] as R);
+  return svgOf([
+    `<path d="M13 8 L10 2" stroke="#1b1b1b" stroke-width="1"/><path d="M21 8 L24 2" stroke="#1b1b1b" stroke-width="1"/>`,
+    box(8, 0, 3, 3, 1, '#1b1b1b'), box(23, 0, 3, 3, 1, '#1b1b1b'),
+    box(9, 32, 3, 2, 2, '#1b1b1b'), box(22, 32, 3, 2, 2, '#1b1b1b'),
+    box(5, 8, 24, 25, 7, '#e53935'),
+    [6, 9, 22, 5, '#2b2b2b'],
+    ...dots,
+    [10, 15, 5, 5, '#ffffff'], [19, 15, 5, 5, '#ffffff'],
+    bigFace(face(k, 11, 20, 16, 17, 24, '#8b0000'), 17, 19, 1.1),
+  ]);
+}
+
+function ijzer(e: Emotion): string {
+  const k = faceKind(e);
+  return svgOf([
+    box(9, 31, 5, 4, 2, '#46607f'), box(21, 31, 5, 4, 2, '#46607f'),
+    box(6, 16, 24, 16, 7, '#6f8fb3', 5),
+    box(9, 4, 18, 12, 6, '#6f8fb3'),
+    box(16, -1, 4, 5, 2, '#d64545'),
+    [10, 7, 16, 6, '#dfeaf6'],
+    bigFace(face(k, 12, 21, 8, 18, 14, '#46607f').filter(([, y]) => y < 13 || y >= 14), 18, 10, 1.1),
+    box(0, 18, 11, 13, 2, '#e8b923'),
+    `<polygon points="5.5,20.5 6.6,23.5 9.6,23.6 7.2,25.4 8.1,28.3 5.5,26.6 2.9,28.3 3.8,25.4 1.4,23.6 4.4,23.5" fill="#ffffff"/>`,
+  ]);
+}
+
+function kristal(e: Emotion): string {
+  const k = faceKind(e);
+  return svgOf([
+    box(10, 31, 4, 3, 2, '#f5a623'), box(20, 31, 4, 3, 2, '#f5a623'),
+    box(5, 9, 24, 23, 7, '#7e6bd6', 6),
+    box(5, 4, 5, 5, 3, '#6352b8'), box(24, 4, 5, 5, 3, '#6352b8'),
+    box(14, 3, 3, 4, 2, '#aef4ff'), box(18, 1, 2, 5, 2, '#d8fbff'),
+    [10, 23, 14, 9, '#b7aaf0'],
+    [8, 12, 8, 8, '#ffffff'], [18, 12, 8, 8, '#ffffff'],
+    bigFace(face(k, 11, 21, 15, 17, 26, '#f5a623', true), 17, 18, 1.05),
+    box(15, 19, 4, 3, 2, '#f5a623'),
+  ]);
+}
+
 export function creatureSvg(id: CreatureId, e: Emotion): string {
-  return id === 'wobble' ? wobble(e) : id === 'clucky' ? clucky(e) : copper(e);
+  const draw: Record<CreatureId, (e: Emotion) => string> = { wobble, snurk, plons, clucky, fizz, muddle, knor, stip, copper, ijzer, kristal };
+  return draw[id](e);
 }

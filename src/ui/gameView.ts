@@ -345,7 +345,9 @@ export class GameView {
     if (token !== this.token || !this.thinking) return;
     const started = performance.now();
     this.setEmotion('thinking');
-    const uci = await this.ai.choose(toFen(this.match.game.position), [...this.match.game.history], this.creature);
+    const own = this.match.game.moves.filter((m) => m.color === 'b');
+    const lastTo = own.length ? own[own.length - 1].to : null;
+    const uci = await this.ai.choose(toFen(this.match.game.position), [...this.match.game.history], this.creature, lastTo);
     if (uci === null || token !== this.token) return;
     const left = MIN_THINK_MS - (performance.now() - started);
     if (left > 0) await wait(left);
