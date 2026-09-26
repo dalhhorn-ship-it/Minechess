@@ -143,6 +143,13 @@ const ICONS: Record<string, { rows: string[]; pal: Record<string, string> }> = {
     ],
     pal: { o: INK, w: '#ffffff' },
   },
+  note: {
+    rows: [
+      '...ooooooo', '...owwwwwo', '...oooooo.', '...o....o.', '...o....o.',
+      '...o....o.', '.ooo..oooo', 'owwo.owwwo', 'owwo.owwo.', '.oo...oo..',
+    ],
+    pal: { o: INK, w: '#7ed957' },
+  },
   lock: {
     rows: [
       '...oooo...', '..o....o..', '..o....o..', '.oooooooo.', '.oyyyyyyo.',

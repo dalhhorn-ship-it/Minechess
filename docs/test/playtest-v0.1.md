@@ -20,7 +20,7 @@ Open the Cloudflare link in Safari on the iPad the kids will use. Tick each line
 | A10 | Play Wobble until you win. Take its pieces | Wobble never gives up while it still has pieces; once it has only its king (and maybe pawns), it waves a white flag and you win | |
 | A11 | On the result screen, tap "Nog eens" and "Huis" | Both work | |
 | A12 | Play a few moves against Copper Bot | Thinking stays under about 3 seconds; it feels beatable | |
-| A13 | Listen | The game makes no sound at all | |
+| A13 | Listen, with the iPad not on silent | After your first tap: calm music on the start screen, adventure music in a game, a boing when you take a piece, sobbing when the creature cries, a fanfare when you win. The speaker and note buttons turn effects and music off | |
 
 If anything freezes: note what you tapped just before, then reload the page.
 

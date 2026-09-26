@@ -103,7 +103,7 @@ Format: Given / When / Then. Version shows the first release that must pass it (
 
 | ID | Criterion | Version |
 |---|---|---|
-| AC-34 | Given sound is on, then only the creature losing a piece and the creature crying make a sound; given sound is off (start screen button, remembered), the game makes no sound at all, and every meaning is still shown by pictures and animation (owner decision round 4) | v0.1 |
+| AC-34 | Given sound is on, then only the creature losing a piece and the creature crying make a sound effect; given music is on, background songs play (a calm song on the start screen and lessons, an adventure song in games, a tenser song against Copper Bot, an arcade song in the hall of fame) with a short jingle on a win or loss; each has its own start screen button that is remembered, with both off the game is silent, and every meaning is still shown by pictures and animation (owner decisions rounds 4 and 5) | v0.1 |
 | AC-35 | Given the game is added to the iPad home screen, then it launches full screen with its own icon | v0.2 |
 | AC-36 | Given the game has been loaded once, when the iPad is offline, then a game against any unlocked creature can be started and finished | v1.0 |
 | AC-37 | Given the game is running, then no network requests go to third parties, no ads appear, and no personal data leaves the device | v0.1 |

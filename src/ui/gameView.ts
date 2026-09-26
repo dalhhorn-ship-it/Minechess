@@ -5,6 +5,7 @@ import { CREATURES, creatureById } from '../ai/creatures';
 import { Match, type Result } from '../game/match';
 import { displayEmotion, enrich, type Emotion } from '../game/emotions';
 import { play as playSound } from './sound';
+import { playJingle } from './music';
 import { PIECE_VALUE } from '../engine';
 import { AiClient } from './aiClient';
 import { creatureSvg } from './creatureArt';
@@ -487,6 +488,7 @@ export class GameView {
     clearTimeout(this.hopTimer);
     this.render();
     const token = this.token;
+    if (result.kind !== 'draw') playJingle(result.kind === 'win' ? 'win' : 'loss');
     let first: Emotion = result.reason === 'resign' ? 'sadResign' : result.kind === 'draw' ? 'goodSport' : emotion;
     if (move && result.kind === 'win') first = enrich(first, move, 'child', Math.random());
     this.setEmotion(first, { persist: true, force: true, lineKey: result.kind === 'draw' ? 'draw' : undefined });

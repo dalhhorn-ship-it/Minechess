@@ -6,10 +6,12 @@ import { LessonView } from './ui/lessonView';
 import { HallView, type NewScore } from './ui/hallView';
 import { icon } from './ui/icons';
 import { installTextures } from './ui/pixel';
-import { installSoundUnlock } from './ui/sound';
+import { installSoundUnlock, whenUnlocked } from './ui/sound';
+import { playSong, resumeWantedSong } from './ui/music';
 
 installTextures();
 installSoundUnlock();
+whenUnlocked(resumeWantedSong);
 
 const app = document.getElementById('app')!;
 let game: GameView | null = null;
@@ -35,24 +37,28 @@ function home() {
   game?.destroy();
   game = null;
   show(homeScreen(play, learn, () => hall()));
+  playSong('home');
 }
 
 function hall(score?: NewScore) {
   game?.destroy();
   game = null;
   show(new HallView(home, score).el);
+  playSong('arcade');
 }
 
 function learn() {
   game?.destroy();
   game = null;
   show(new LessonView(home).el);
+  playSong('home');
 }
 
 function play(id: CreatureId) {
   game?.destroy();
   game = new GameView(id, { home, play, hall });
   show(game.el);
+  playSong(id === 'copper' ? 'workshop' : 'adventure');
 }
 
 // Landscape only in v0.1: a picture asks to turn the iPad.

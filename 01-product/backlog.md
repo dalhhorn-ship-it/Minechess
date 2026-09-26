@@ -10,6 +10,7 @@ Ordered by priority. Sources: product director review after v0.1, owner feedback
 | 2 | Kid playtest, two short sessions per child (Part B) | v0.1 definition of done item 6; decides the v0.2 order |
 | 3 | Fix what the check, the playtest and the code review find | Keep v0.1 solid before adding more |
 | 4 | **Done:** strategy lessons in Dutch for ages 8 and up, reachable from the start screen (owner request, pulls part of F14 forward) | Owner asked for it; the owner wants to learn too |
+| 4c | **Done:** more emotions (crying), longer bubbles, sound effects and original background music with win and loss jingles (owner requests) | Makes the creatures and the game feel alive |
 | 4b | **Done:** old school hall of fame with points per game (owner request): top 10 on the iPad, three letter names | Gives both kids a reason to replay and beat their own score |
 
 ## Next: v0.2 part 1 **(sanction)**

@@ -6,7 +6,7 @@ Status: v0.1 built and live on Cloudflare (PRD Draft v0.4); next is the owner's 
 
 ## Project context every agent must respect
 
-1. Audience is 5 to 12. The youngest player is 5 and can't read yet, so apply the `ux-ipad-kids` 4 to 6 guidance as the floor: meaning must never depend on reading. Sound is limited to a few cartoon effects made in code (the creature losing a piece, crying), with an on and off button; no voice or read aloud, and everything must still be understandable with sound off, so pictures and animation do the main work. Allow more depth (strategy, progression) for the 9 year old.
+1. Audience is 5 to 12. The youngest player is 5 and can't read yet, so apply the `ux-ipad-kids` 4 to 6 guidance as the floor: meaning must never depend on reading. Audio is made in code with Web Audio: a few cartoon effects (the creature losing a piece, crying) and original background songs in a retro adventure and calm block world style (`src/ui/music.ts`; never copy melodies from existing games), each with its own on and off button; no voice or read aloud, and everything must still be understandable with sound off, so pictures and animation do the main work. Allow more depth (strategy, progression) for the 9 year old.
 2. Creatures are original. Never use Minecraft names, logos, textures, sounds, or recognizable characters.
 3. Child safety first: no third party ads or tracking, no open chat, parental gate (a 4 digit parent PIN) for purchases, settings, and external links (COPPA, GDPR K, Apple Kids Category).
 4. Keep chess rules and opponent AI decoupled from the rendering and platform shell.

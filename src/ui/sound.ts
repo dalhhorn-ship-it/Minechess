@@ -8,6 +8,18 @@ export type SoundName = 'lostPiece' | 'bigLoss' | 'cry';
 const KEY = 'minechess.sound.v1';
 let ctx: AudioContext | null = null;
 
+/** The shared audio context, once a tap has unlocked it. */
+export function audioContext(): AudioContext | null {
+  return ctx;
+}
+
+let onUnlock: (() => void) | null = null;
+
+/** Runs once audio is unlocked (used to start the background music). */
+export function whenUnlocked(fn: () => void): void {
+  onUnlock = fn;
+}
+
 export function soundOn(): boolean {
   try {
     return window.localStorage.getItem(KEY) !== 'off';
@@ -22,7 +34,7 @@ export function setSoundOn(on: boolean): void {
   } catch {
     // Not remembered in private browsing; still applies for this visit.
   }
-  if (!on) void ctx?.suspend();
+
 }
 
 /** Call once at startup: the first touch unlocks audio on iPad. */
@@ -30,12 +42,18 @@ export function installSoundUnlock(): void {
   const unlock = () => {
     try {
       ctx ??= new AudioContext();
-      void ctx.resume();
+      void ctx.resume().then(() => onUnlock?.());
     } catch {
       ctx = null;
     }
   };
   document.addEventListener('pointerdown', unlock, { capture: true });
+  // Pause all audio while the iPad shows another app or the screen is off.
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx) return;
+    if (document.hidden) void ctx.suspend();
+    else void ctx.resume().then(() => onUnlock?.());
+  });
 }
 
 /** One sliding tone with a soft start and end. */
